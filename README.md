@@ -348,5 +348,3 @@
         }
         autoShake();
     </script>
-</body>
-</html>

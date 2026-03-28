@@ -1,5 +1,4 @@
-<!<!DOCTYPE html>
-<超文本标记语言语言="zh-CN">
+
 <头>
     <元数据charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">

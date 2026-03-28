@@ -1,4 +1,7 @@
-
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>畏惧了</title>
     <style>
@@ -31,10 +34,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('bg.jpg') center/cover no-repeat;
+            background: url('https://picsum.photos/id/175/1920/1080') center/cover no-repeat;
             filter: brightness(0.8);
             z-index: -1;
-            transform: translate(0, 0) !important;
         }
 
         #rippleCanvas {
@@ -59,7 +61,6 @@
             z-index: 1;
         }
 
-        /* 七段数码管字体 */
         @font-face {
             font-family: 'Digital-7';
             src: url('https://cdn.jsdelivr.net/npm/digital-7-font@1.0.0/digital-7.ttf') format('truetype');
@@ -101,7 +102,7 @@
             opacity: 0.5;
         }
         .quote-en {
-            font-family: 'Georgia', serif;
+            font-family: Georgia, serif;
             font-style: italic;
             font-size: 1.8rem;
             margin-bottom: 15px;
@@ -126,7 +127,6 @@
             border-radius: 50%;
             background: rgba(255,255,255,0.1);
             font-size: 1.5rem;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .menu-btn {
@@ -140,8 +140,6 @@
             font-size: 1.8rem;
             cursor: pointer;
             transition: transform 0.4s ease;
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
             border: none;
         }
 
@@ -184,7 +182,6 @@
             font-size: 1.1rem;
             cursor: pointer;
             transition: background 0.3s;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .sidebar-item:hover {
@@ -203,8 +200,8 @@
         <div class="sidebar-item">设置</div>
         <div class="sidebar-item">联系</div>
     </div>
+
     <div class="container">
-        <!-- 数码管时间显示 -->
         <h1 class="title" id="timeTitle">00:00:00</h1>
 
         <div class="quote-box" id="shakeBox">
@@ -213,6 +210,7 @@
             <div class="quote-cn">畏惧了</div>
             <span class="quote-right">”</span>
         </div>
+
         <div class="social-links">
             <div class="social-icon">🐱</div>
             <div class="social-icon">📺</div>
@@ -221,7 +219,8 @@
             <div class="social-icon">🐦</div>
             <div class="social-icon">📨</div>
         </div>
-        <div class="menu-btn" id="menuBtn">☰</div>
+
+        <button class="menu-btn" id="menuBtn">☰</button>
         <div class="footer">rw畏惧了</div>
     </div>
 
@@ -233,7 +232,7 @@
         const ctx = canvas.getContext('2d');
         const timeTitle = document.getElementById('timeTitle');
 
-        // 实时时间 精确到秒
+        // 实时时间
         function updateTime() {
             const now = new Date();
             const h = String(now.getHours()).padStart(2, '0');
@@ -244,6 +243,7 @@
         updateTime();
         setInterval(updateTime, 1000);
 
+        // 画布自适应
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -251,14 +251,13 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
+        // 涟漪
         let ripples = [];
         let lastX = 0, lastY = 0;
 
-        // 单次1圈涟漪
         function createRipple(x, y) {
             ripples.push({
-                x: x,
-                y: y,
+                x, y,
                 radius: 0,
                 maxRadius: 100,
                 alpha: 1,
@@ -281,8 +280,7 @@
                 r.alpha -= 0.015;
 
                 if (r.alpha <= 0 || r.radius > r.maxRadius) {
-                    ripples.splice(i, 1);
-                    i--;
+                    ripples.splice(i--, 1);
                 }
             }
             requestAnimationFrame(drawRipples);
@@ -306,7 +304,7 @@
 
             const dx = x - lastX;
             const dy = y - lastY;
-            if (Math.sqrt(dx*dx + dy*dy) > 12) {
+            if (Math.hypot(dx, dy) > 12) {
                 createRipple(x, y);
                 lastX = x;
                 lastY = y;
@@ -316,19 +314,23 @@
         document.addEventListener('touchmove', handleMove, { passive: true });
         document.addEventListener('mousemove', handleMove);
 
+        // 禁止页面拖动
         document.addEventListener('touchmove', (e) => {
             if (!e.cancelable) return;
             e.preventDefault();
         }, { passive: false });
 
+        // 侧边菜单
         function toggleMenu() {
             menuBtn.classList.toggle('rotated');
             sidebar.classList.toggle('show');
         }
+
         menuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleMenu();
         });
+
         document.addEventListener('click', (e) => {
             if (sidebar.classList.contains('show') &&
                 !sidebar.contains(e.target) &&
@@ -337,6 +339,7 @@
             }
         });
 
+        // 轻微抖动
         let time = 0;
         function autoShake() {
             time += 0.04;
@@ -348,3 +351,5 @@
         }
         autoShake();
     </script>
+</body>
+</html>

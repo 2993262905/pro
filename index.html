@@ -4,12 +4,37 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>锈蚀死域社区</title>
-<meta name="description" id="metaDescription" content="锈蚀死域社区 —— 《铁锈战争》模组社区软件：发帖交流、AI 助手、实用小工具与实时聊天。" />
+<meta name="description" id="metaDescription" content="锈蚀死域社区 —— 硬核废土生存" />
 <link rel="icon" id="faviconLink" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0f18'/%3E%3Cpath d='M9 22 L16 8 L23 22 Z' fill='none' stroke='%2338bdf8' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="/assets/style.css" />
 <style>
+  /* 兜底：即使 <body> 尚未解析（例如外部脚本阻塞了解析），也保持深色底，避免纯白页面 */
   html { background: #05070c; }
+  html.xsdz-slow::before {
+    content: "锈蚀死域 · 载入中";
+    position: fixed; inset: 0;
+    display: grid; place-items: center;
+    background: #05070c;
+    color: rgba(140, 170, 205, .55);
+    font: 500 12.5px/1.6 ui-monospace, Menlo, Consolas, monospace;
+    letter-spacing: .32em;
+    z-index: 2147483600;
+    pointer-events: none;
+  }
+  html.xsdz-ready::before { display: none; }
 </style>
+<script>
+(function () {
+  var el = document.documentElement;
+  var timer = setTimeout(function () { el.classList.add('xsdz-slow'); }, 400);
+  var done = function () { clearTimeout(timer); el.classList.add('xsdz-ready'); };
+  if (document.readyState !== 'loading') { done(); }
+  else {
+    document.addEventListener('DOMContentLoaded', done);
+    window.addEventListener('load', done);
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -21,12 +46,14 @@
   <div class="bg-scan"></div>
   <div class="bg-noise"></div>
 </div>
+<div class="cursor-spot" aria-hidden="true"></div>
 
 <!-- 顶部导航 -->
 <header class="nav" id="nav">
   <div class="nav-inner">
     <a class="brand" href="#home">
-      <span class="brand-mark">
+      <img class="brand-img" id="brandImg" alt="" hidden />
+      <span class="brand-mark" id="brandMark">
         <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
           <path d="M9 23 L16 7 L23 23 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
           <path d="M12.6 18.4 h6.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
@@ -35,8 +62,10 @@
       <span class="brand-text" id="brandText">锈蚀死域</span>
     </a>
     <nav class="nav-links" id="navLinks"></nav>
-    <a class="btn btn-ghost nav-cta" id="navCta" href="#chat">加入社区</a>
-    <button class="nav-burger" id="navBurger" aria-label="菜单"><span></span><span></span></button>
+    <a class="btn btn-ghost nav-cta" id="navCta" href="#download">下载客户端</a>
+    <button class="nav-burger" id="navBurger" aria-label="菜单">
+      <span></span><span></span>
+    </button>
   </div>
 </header>
 
@@ -46,147 +75,125 @@
   <section class="hero" id="home">
     <div class="hero-inner">
       <div class="hero-copy">
-        <div class="hero-badge" id="heroBadge"></div>
-        <h1 class="hero-title"><span id="heroTitleTop"></span><br /><span class="grad" id="heroTitleBottom"></span></h1>
-        <p class="hero-sub" id="heroSubtitle"></p>
+        <div class="badge" id="heroBadge">
+          <span class="badge-dot"></span><span id="heroBadgeText">加载中…</span>
+        </div>
+        <h1 class="hero-title">
+          <span id="heroTitleTop">锈蚀死域</span><span class="grad" id="heroTitleBottom">社区</span>
+        </h1>
+        <p class="hero-sub" id="heroSub"></p>
         <div class="hero-actions">
-          <a class="btn btn-primary" id="heroPrimary" href="#posts">去看帖子</a>
-          <a class="btn btn-ghost" id="heroSecondary" href="#download">下载社区软件</a>
+          <a class="btn btn-primary" id="heroPrimary" href="#download">
+            <span id="heroPrimaryText">立即下载</span>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn-ghost" id="heroSecondary" href="#download"><span id="heroSecondaryText">查看更新日志</span></a>
         </div>
         <div class="hero-stats" id="heroStats"></div>
       </div>
-      <div class="hero-panel">
-        <div class="panel-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="panel-title" id="panelTitle">社区动态</span></div>
-        <ul class="panel-lines" id="panelLines"></ul>
+
+      <div class="hero-visual">
+        <div class="terminal" id="terminal">
+          <div class="terminal-bar">
+            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="terminal-title" id="terminalTitle">xsdz-launcher</span>
+          </div>
+          <div class="terminal-body" id="terminalBody"></div>
+        </div>
+        <div class="hero-card" id="heroCard">
+          <img id="heroCardImg" alt="" hidden />
+          <div class="hero-card-fallback" id="heroCardFallback">
+            <svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true">
+              <defs>
+                <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="var(--accent)"/>
+                  <stop offset="1" stop-color="var(--accent-2)"/>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="46" fill="none" stroke="url(#hg)" stroke-width="1.2" opacity=".5"/>
+              <circle cx="60" cy="60" r="34" fill="none" stroke="url(#hg)" stroke-width="1.2" opacity=".35"/>
+              <path d="M36 78 L60 26 L84 78 Z" fill="none" stroke="url(#hg)" stroke-width="2.6" stroke-linejoin="round"/>
+              <path d="M48 66 h24" stroke="url(#hg)" stroke-width="2.6" stroke-linecap="round"/>
+            </svg>
+            <p>RUSTY DEADZONE</p>
+            <em class="hero-card-hint">主视觉图位 · 后台「首屏 Hero → 右侧主视觉图片」可替换</em>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="hero-marquee"><div class="marquee-track" id="marqueeTrack"></div></div>
   </section>
 
-  <!-- 功能总览 -->
+  <!-- 特性 -->
   <section class="section" id="features">
     <div class="section-head">
-      <div class="eyebrow" id="featuresEyebrow"></div>
-      <h2 id="featuresTitle"></h2>
-      <p id="featuresSubtitle"></p>
+      <span class="eyebrow" id="featuresEyebrow">CORE FEATURES</span>
+      <h2 class="section-title" id="featuresTitle">为硬核而生</h2>
+      <p class="section-sub" id="featuresSub"></p>
     </div>
     <div class="feature-grid" id="featureGrid"></div>
   </section>
 
-  <!-- 帖子广场 -->
-  <section class="section" id="posts">
+  <!-- 图集 -->
+  <section class="section" id="gallery">
     <div class="section-head">
-      <div class="eyebrow" id="postsEyebrow"></div>
-      <h2 id="postsTitle"></h2>
-      <p id="postsSubtitle"></p>
+      <span class="eyebrow" id="galleryEyebrow">SCREENSHOTS</span>
+      <h2 class="section-title" id="galleryTitle">锈蚀世界</h2>
+      <p class="section-sub" id="gallerySub"></p>
     </div>
-    <div class="post-chips" id="postChips"></div>
-    <div class="post-list" id="postList"></div>
-  </section>
-
-  <!-- AI 聊天 -->
-  <section class="section" id="ai">
-    <div class="section-head">
-      <div class="eyebrow" id="aiEyebrow"></div>
-      <h2 id="aiTitle"></h2>
-      <p id="aiSubtitle"></p>
-    </div>
-    <div class="chat-panel">
-      <div class="chat-head">
-        <span class="chat-avatar">锈</span>
-        <div><div class="chat-name" id="aiBotName">锈锈助手</div><div class="chat-status"><span class="online-dot"></span>在线 · 通常秒回</div></div>
-        <span class="demo-tag">演示版</span>
-      </div>
-      <div class="chat-messages" id="aiMessages"></div>
-      <div class="quick-prompts" id="aiPrompts"></div>
-      <form class="chat-form" id="aiForm">
-        <input id="aiInput" type="text" placeholder="问问模组的事：比如「单位 ini 怎么写」" autocomplete="off" />
-        <button class="btn btn-primary" type="submit">发送</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- 日常小工具 -->
-  <section class="section" id="tools">
-    <div class="section-head">
-      <div class="eyebrow" id="toolsEyebrow"></div>
-      <h2 id="toolsTitle"></h2>
-      <p id="toolsSubtitle"></p>
-    </div>
-    <div class="tool-grid">
-      <div class="tool-card">
-        <h3>时间戳转换</h3>
-        <p class="tool-desc">输入 Unix 时间戳（秒或毫秒），转成北京时间；也可以看当前时间戳。</p>
-        <div class="tool-row"><input id="tsInput" type="text" placeholder="例如 1792199133" /><button class="btn btn-ghost" id="tsBtn" type="button">转换</button></div>
-        <div class="tool-out" id="tsOut">当前时间戳：<b id="tsNow">—</b></div>
-      </div>
-      <div class="tool-card">
-        <h3>颜色转换</h3>
-        <p class="tool-desc">做模组配色、改 UI 颜色时用：HEX 与 RGB 互转。</p>
-        <div class="tool-row"><input id="colorInput" type="color" value="#38bdf8" /><input id="colorHex" type="text" value="#38bdf8" /></div>
-        <div class="tool-out">RGB：<b id="colorRgb">56, 189, 248</b></div>
-      </div>
-      <div class="tool-card">
-        <h3>字数统计</h3>
-        <p class="tool-desc">发帖之前先数数：字符、汉字、行数一次看清。</p>
-        <textarea id="wcInput" rows="3" placeholder="把文字粘贴到这里……"></textarea>
-        <div class="tool-out" id="wcOut">字符 0 · 汉字 0 · 行数 0</div>
-      </div>
-      <div class="tool-card">
-        <h3>进制转换</h3>
-        <p class="tool-desc">输入一个十进制整数，转成二 / 八 / 十六进制。</p>
-        <div class="tool-row"><input id="baseInput" type="text" placeholder="例如 255" /><button class="btn btn-ghost" id="baseBtn" type="button">转换</button></div>
-        <div class="tool-out" id="baseOut">二进制 — · 八进制 — · 十六进制 —</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 社区聊天 -->
-  <section class="section" id="chat">
-    <div class="section-head">
-      <div class="eyebrow" id="chatEyebrow"></div>
-      <h2 id="chatTitle"></h2>
-      <p id="chatSubtitle"></p>
-    </div>
-    <div class="chat-panel">
-      <div class="room-tabs" id="roomTabs"></div>
-      <div class="chat-messages tall" id="chatMessages"></div>
-      <form class="chat-form" id="chatForm">
-        <input id="chatInput" type="text" placeholder="说点什么……（演示版，消息只在本页显示）" autocomplete="off" />
-        <button class="btn btn-primary" type="submit">发送</button>
-      </form>
-    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
   </section>
 
   <!-- 下载 -->
-  <section class="section" id="download">
-    <div class="section-head">
-      <div class="eyebrow" id="downloadEyebrow"></div>
-      <h2 id="downloadTitle"></h2>
-      <p id="downloadSubtitle"></p>
-    </div>
-    <div class="download-card">
-      <div class="download-meta" id="downloadMeta"></div>
-      <div class="download-platforms" id="downloadPlatforms"></div>
+  <section class="section section-download" id="download">
+    <div class="download-panel">
+      <div class="download-head">
+        <div>
+          <span class="eyebrow" id="downloadEyebrow">DOWNLOAD</span>
+          <h2 class="section-title" id="downloadTitle">获取锈蚀死域</h2>
+          <p class="section-sub" id="downloadSub"></p>
+        </div>
+        <div class="version-box">
+          <div class="version-row"><span>最新版本</span><strong id="dlVersion">v3.2.0</strong></div>
+          <div class="version-row"><span>安装包大小</span><strong id="dlSize">4.86 GB</strong></div>
+          <div class="version-row"><span>更新时间</span><strong id="dlUpdated">2026-10-01</strong></div>
+          <div class="version-row"><span>校验</span><strong class="mono" id="dlHash">SHA-256</strong></div>
+        </div>
+      </div>
+      <div class="platform-grid" id="platformGrid"></div>
+      <div class="mirror-row">
+        <span class="mirror-label">镜像线路</span>
+        <div class="mirror-list" id="mirrorList"></div>
+      </div>
       <p class="download-note" id="downloadNote"></p>
     </div>
   </section>
 
   <!-- 关于 -->
   <section class="section" id="about">
-    <div class="section-head">
-      <div class="eyebrow" id="aboutEyebrow"></div>
-      <h2 id="aboutTitle"></h2>
+    <div class="about-grid">
+      <div class="about-copy">
+        <span class="eyebrow" id="aboutEyebrow">ABOUT US</span>
+        <h2 class="section-title" id="aboutTitle">关于锈蚀死域社区</h2>
+        <div id="aboutParagraphs"></div>
+      </div>
+      <div class="about-points" id="aboutPoints"></div>
     </div>
-    <div class="about-body" id="aboutBody"></div>
-    <div class="about-points" id="aboutPoints"></div>
   </section>
 
 </main>
 
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand"><span class="brand-text">锈蚀死域</span><span class="footer-tag">模组社区软件</span></div>
-    <nav class="footer-links" id="footerLinks"></nav>
+    <div class="footer-brand">
+      <span class="brand-mark small">
+        <svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true">
+          <path d="M9 23 L16 7 L23 23 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span id="footerBrandText">锈蚀死域社区</span>
+    </div>
+    <div class="footer-links" id="footerLinks"></div>
     <div class="footer-copy" id="footerCopy"></div>
     <div class="footer-icp" id="footerIcp"></div>
   </div>

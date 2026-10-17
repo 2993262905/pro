@@ -1,0 +1,247 @@
+{
+  "meta": {
+    "title": "锈蚀死域社区",
+    "logoText": "锈蚀死域",
+    "logoImage": "",
+    "favicon": "",
+    "description": "锈蚀死域社区 —— 硬核废土生存，与数十万幸存者一起重建文明。",
+    "accent": "#38bdf8",
+    "accent2": "#6366f1"
+  },
+  "nav": [
+    {
+      "label": "首页",
+      "href": "#home"
+    },
+    {
+      "label": "特性",
+      "href": "#features"
+    },
+    {
+      "label": "图集",
+      "href": "#gallery"
+    },
+    {
+      "label": "下载",
+      "href": "#download"
+    },
+    {
+      "label": "关于",
+      "href": "#about"
+    }
+  ],
+  "navCta": {
+    "label": "下载社区",
+    "href": "#download"
+  },
+  "hero": {
+    "badge": "v3.2.0「赤潮」版本现已上线",
+    "titleTop": "锈蚀死域",
+    "titleBottom": "社区",
+    "subtitle": "氧化风暴吞没了旧世界。带上你的装备，在这片锈蚀的废土上，重新定义生存。",
+    "primary": {
+      "label": "立即下载",
+      "href": "#download"
+    },
+    "secondary": {
+      "label": "查看更新日志",
+      "href": "#download"
+    },
+    "cardImage": "",
+    "stats": [
+      {
+        "value": "12,846",
+        "label": "当前在线"
+      },
+      {
+        "value": "3,412,907",
+        "label": "累计玩家"
+      },
+      {
+        "value": "86",
+        "label": "活跃服务器"
+      },
+      {
+        "value": "96.4%",
+        "label": "好评率"
+      }
+    ],
+    "terminal": {
+      "title": "xsdz-launcher --update",
+      "lines": [
+        "$ xsdz-launcher update --channel stable",
+        "正在校验本地资源 ................ 100%",
+        "下载增量包 3.2.0-rc4 ............ 428 MB",
+        "校验签名 RustGuard v2 ........... OK",
+        "注入反作弊内核 .................. OK",
+        "准备就绪，启动游戏。"
+      ]
+    }
+  },
+  "features": {
+    "eyebrow": "CORE FEATURES",
+    "title": "为硬核而生",
+    "subtitle": "每一项系统都经过数千小时的对抗测试，只为让你在废土上的每一次决策都充满重量。",
+    "items": [
+      {
+        "icon": "pulse",
+        "title": "硬核生存",
+        "desc": "饥饿、体温、辐射、伤病——四条独立状态轴，任何一项失控都会让你永远留在废土。"
+      },
+      {
+        "icon": "storm",
+        "title": "锈蚀风暴",
+        "desc": "动态天气引擎驱动的氧化风暴会持续腐蚀你的装备与据点，逼迫你在安全与收益间权衡。"
+      },
+      {
+        "icon": "build",
+        "title": "模块化建造",
+        "desc": "从地下掩体到空中要塞，200+ 建筑模块自由拼接，承重与结构真实模拟。"
+      },
+      {
+        "icon": "users",
+        "title": "200 人同服",
+        "desc": "单服务器最高承载 200 名玩家，资源稀缺带来真实的合作与背叛。"
+      },
+      {
+        "icon": "shield",
+        "title": "RustGuard 内核",
+        "desc": "自研内核级反作弊，累计封禁外挂账号 1,280,000+，还你一片干净的战场。"
+      },
+      {
+        "icon": "devices",
+        "title": "跨端互通",
+        "desc": "PC、Android、iOS 三端数据实时同步，进度与仓库随时带走。"
+      }
+    ]
+  },
+  "gallery": {
+    "eyebrow": "SCREENSHOTS",
+    "title": "锈蚀世界",
+    "subtitle": "每一帧都是真实对局截图，未经后期渲染。",
+    "items": [
+      {
+        "src": "",
+        "caption": "黎明前的氧化风暴"
+      },
+      {
+        "src": "",
+        "caption": "废弃工业区的据点攻防"
+      },
+      {
+        "src": "",
+        "caption": "地下交易站"
+      }
+    ]
+  },
+  "download": {
+    "eyebrow": "DOWNLOAD",
+    "title": "获取锈蚀死域",
+    "subtitle": "选择你的平台，安装包已通过 RustGuard 签名校验。",
+    "version": "v3.2.0",
+    "size": "4.86 GB",
+    "updated": "2026-10-01",
+    "hash": "SHA-256 9f2c…a71d",
+    "platforms": [
+      {
+        "name": "Windows 官方安装包",
+        "icon": "windows",
+        "url": "#",
+        "note": "Win 10 / 11 64-bit",
+        "primary": true
+      },
+      {
+        "name": "Android 客户端",
+        "icon": "android",
+        "url": "#",
+        "note": "Android 9.0+",
+        "primary": false
+      },
+      {
+        "name": "iOS 客户端",
+        "icon": "apple",
+        "url": "#",
+        "note": "iOS 14+",
+        "primary": false
+      }
+    ],
+    "mirrors": [
+      {
+        "name": "官方线路（高速）",
+        "url": "#"
+      },
+      {
+        "name": "华南镜像",
+        "url": "#"
+      },
+      {
+        "name": "海外线路",
+        "url": "#"
+      }
+    ],
+    "note": "安装包内已包含 RustGuard 反作弊内核，首次启动需重启一次以完成驱动加载。"
+  },
+  "about": {
+    "eyebrow": "ABOUT US",
+    "title": "关于锈蚀死域社区",
+    "paragraphs": [
+      "锈蚀死域社区成立于 2019 年，由一群热爱硬核生存玩法的玩家与开发者共同维护。我们不追逐流量，只打磨一个足够真实、足够残酷的世界。",
+      "目前社区拥有 86 台自建服务器，覆盖中国大陆、东南亚与北美，累计服务玩家超过 340 万。所有服务器日志公开可查，每一次封禁都有据可依。"
+    ],
+    "points": [
+      {
+        "title": "透明运营",
+        "desc": "服务器日志、封禁记录与更新路线图全部公开。"
+      },
+      {
+        "title": "玩家共治",
+        "desc": "版本方向由社区投票决定，重大改动需 2/3 玩家同意。"
+      },
+      {
+        "title": "长期主义",
+        "desc": "六年持续更新，从未出售过任何影响平衡的道具。"
+      }
+    ]
+  },
+  "footer": {
+    "copyright": "© 2019-2026 锈蚀死域社区 · Rusty Deadzone Community",
+    "links": [
+      {
+        "label": "用户协议",
+        "href": "#"
+      },
+      {
+        "label": "隐私政策",
+        "href": "#"
+      },
+      {
+        "label": "更新日志",
+        "href": "#"
+      },
+      {
+        "label": "联系客服",
+        "href": "#"
+      }
+    ],
+    "icp": "本站为社区非商业性站点 · 请勿用于商业用途"
+  },
+  "h": {
+    "e": {
+      "r": {
+        "o": {
+          ".": {
+            "b": {
+              "a": {
+                "d": {
+                  "g": {
+                    "e": "v1.0新版本已上线"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

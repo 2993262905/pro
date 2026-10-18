@@ -450,7 +450,30 @@ initChrome();
 window.__xsdz_render = render;
 window.__xsdz_editMode = EDIT_MODE;
 
-fetch('/api/content')
-  .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad status'))))
-  .then((data) => render(data))
+const API_ORIGIN = 'https://api.wjl.qd.je';
+
+// 后台上传的图片存的是相对路径（/uploads/xxx），主站跨域显示时补成后台绝对地址
+function fixImagePaths(node) {
+  if (Array.isArray(node)) return node.forEach(fixImagePaths);
+  if (node && typeof node === 'object') {
+    for (const k of Object.keys(node)) {
+      const v = node[k];
+      if (typeof v === 'string' && v.indexOf('/uploads/') === 0) node[k] = API_ORIGIN + v;
+      else fixImagePaths(v);
+    }
+  }
+}
+
+function fetchJSON(url, timeoutMs) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  return fetch(url, { signal: ctrl.signal })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad status'))))
+    .finally(() => clearTimeout(t));
+}
+
+// 优先从实时后台取数；后台休眠/不可达时回落同源静态副本，再不行用内置兜底
+fetchJSON(API_ORIGIN + '/api/content', 8000)
+  .catch(() => fetchJSON('/api/content', 4000))
+  .then((data) => { fixImagePaths(data); render(data); })
   .catch(() => render(FALLBACK));

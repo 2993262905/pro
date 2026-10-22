@@ -1,204 +1,252 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>锈蚀死域社区</title>
-<meta name="description" id="metaDescription" content="锈蚀死域社区 —— 硬核废土生存" />
-<link rel="icon" id="faviconLink" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0f18'/%3E%3Cpath d='M9 22 L16 8 L23 22 Z' fill='none' stroke='%2338bdf8' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E" />
-<link rel="stylesheet" href="/assets/style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>畏惧了的软件总站 — 散装软件，统一门面</title>
+<meta name="description" content="畏惧了的软件总站：锈蚀死域社区 App、AwesEvo AI 工作台、《治哈》小游戏、灵聊、rw-community——散落在各处的项目，都收进这一页。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='45' font-size='34' font-family='sans-serif' font-weight='700' fill='white' text-anchor='middle'%3E%E7%95%8F%3C/text%3E%3C/svg%3E">
 <style>
-  /* 兜底：即使 <body> 尚未解析（例如外部脚本阻塞了解析），也保持深色底，避免纯白页面 */
-  html { background: #05070c; }
-  html.xsdz-slow::before {
-    content: "锈蚀死域 · 载入中";
-    position: fixed; inset: 0;
-    display: grid; place-items: center;
-    background: #05070c;
-    color: rgba(140, 170, 205, .55);
-    font: 500 12.5px/1.6 ui-monospace, Menlo, Consolas, monospace;
-    letter-spacing: .32em;
-    z-index: 2147483600;
-    pointer-events: none;
-  }
-  html.xsdz-ready::before { display: none; }
+/* 与 AwesEvo 官网同一套设计变量 */
+:root{
+  --bg:#faf9f7; --panel:#ffffff; --soft:#f3f1ed; --soft-2:#eae7e1;
+  --border:#e6e2db; --border-2:#d5cfc6;
+  --text:#1b1a18; --text-2:#55514a; --text-3:#8a8479;
+  --accent:#2563eb; --accent-hover:#1d4ed8; --accent-soft:#e8f0fc;
+  --ok:#3f7d58; --ok-soft:#e9f3ed;
+  --shadow-sm:0 1px 2px rgba(28,25,20,.06);
+  --shadow:0 4px 16px -4px rgba(28,25,20,.12),0 1px 3px rgba(28,25,20,.06);
+  --shadow-lg:0 24px 64px -16px rgba(28,25,20,.28);
+  --r-sm:7px; --r:10px; --r-lg:14px;
+  --t-fast:120ms; --t-mid:200ms; --t-slow:320ms;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+::selection{background:var(--accent-soft)}
+
+/* ---------- 导航 ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(250,249,247,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);transition:box-shadow var(--t-mid) var(--ease)}
+.nav.scrolled{box-shadow:var(--shadow-sm)}
+.nav-in{display:flex;align-items:center;gap:28px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700;font-size:17px;letter-spacing:.2px}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:16px;font-weight:700;box-shadow:var(--shadow-sm)}
+.ver{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-soft);border:1px solid #cfdefa;padding:1px 7px;border-radius:99px}
+.nav-links{display:flex;gap:22px;margin-left:auto}
+.nav-links a{color:var(--text-2);font-size:14px;transition:color var(--t-fast) var(--ease)}
+.nav-links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-weight:600;font-size:15px;padding:10px 20px;border-radius:var(--r);border:1px solid var(--accent);box-shadow:var(--shadow-sm);transition:all var(--t-fast) var(--ease);cursor:pointer}
+.btn:hover{background:var(--accent-hover);border-color:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:active{transform:scale(.98)}
+.btn.small{padding:7px 14px;font-size:14px}
+.btn.ghost{background:var(--panel);color:var(--text);border-color:var(--border-2)}
+.btn.ghost:hover{border-color:var(--text-3);background:var(--panel)}
+
+/* ---------- Hero ---------- */
+.hero{padding:68px 0 6px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--text-2);background:var(--panel);border:1px solid var(--border);border-radius:99px;padding:4px 12px;box-shadow:var(--shadow-sm)}
+.eyebrow i{width:7px;height:7px;border-radius:99px;background:var(--ok);display:inline-block}
+h1{font-size:46px;line-height:1.16;font-weight:800;letter-spacing:-.5px;margin:20px 0 16px}
+h1 .hl{color:var(--accent)}
+.lede{font-size:17.5px;color:var(--text-2);max-width:36em}
+.meta-row{font-size:13px;color:var(--text-3);display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:20px}
+.meta-row b{color:var(--text-2);font-weight:600}
+.dot-sep{width:3px;height:3px;border-radius:99px;background:var(--border-2)}
+
+/* ---------- 区块 ---------- */
+section{padding:46px 0 8px}
+.kicker{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase}
+h2{font-size:30px;font-weight:800;letter-spacing:-.3px;margin:8px 0 10px}
+.sub{color:var(--text-2);max-width:44em}
+
+/* ---------- 徽章 ---------- */
+.badge{font-family:var(--mono);font-size:11px;font-weight:500;padding:1px 7px;border-radius:99px;border:1px solid;white-space:nowrap;flex:none}
+.badge.blue{background:var(--accent-soft);color:var(--accent);border-color:#cfdefa}
+.badge.green{background:var(--ok-soft);color:var(--ok);border-color:#cfe3d6}
+.badge.amber{background:#faf0dc;color:#92600f;border-color:#e8d5a8}
+.badge.gray{background:var(--soft);color:var(--text-2);border-color:var(--border)}
+
+/* ---------- 旗舰卡 ---------- */
+.flag{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:34px;margin-top:28px;display:grid;grid-template-columns:1.2fr 1fr;gap:34px;transition:all var(--t-mid) var(--ease)}
+.flag:hover{border-color:var(--border-2)}
+.flag .f-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.flag .ic{width:46px;height:46px;border-radius:var(--r);background:var(--accent-soft);display:grid;place-items:center;font-size:23px;flex:none}
+.flag h3{font-size:22px}
+.flag p{color:var(--text-2);font-size:14.5px}
+.flag .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.spec{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;font-size:14px;align-self:start}
+.spec .r{display:flex;justify-content:space-between;padding:9px 14px;background:var(--panel)}
+.spec .r:nth-child(odd){background:var(--soft)}
+.spec .r span:first-child{color:var(--text-3)}
+.spec .r span:last-child{font-weight:600}
+
+/* ---------- 项目卡 ---------- */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:28px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow-sm);transition:all var(--t-mid) var(--ease);display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--border-2)}
+.card .c-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.card .ic{width:38px;height:38px;border-radius:var(--r);background:var(--accent-soft);display:grid;place-items:center;font-size:19px;flex:none}
+.card h3{font-size:16.5px;line-height:38px}
+.card .c-head .badge{margin-left:auto;margin-top:8px}
+.card p{font-size:14px;color:var(--text-2);flex:1}
+.card .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.soon{font-size:13px;color:var(--text-3);padding:7px 0}
+
+/* ---------- 页脚 ---------- */
+footer{margin-top:70px;border-top:1px solid var(--border);padding:26px 0 34px;color:var(--text-3);font-size:13.5px}
+.foot-in{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.foot-in .sp{flex:1}
+.foot-in a{color:var(--text-2)}
+.foot-in a:hover{color:var(--text)}
+.foot-in a.egg{color:var(--text-3);font-size:12px;opacity:.65}
+.foot-in a.egg:hover{opacity:1;color:var(--text-2)}
+
+/* ---------- 动画 ---------- */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity var(--t-slow) var(--ease),transform var(--t-slow) var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:960px){
+  h1{font-size:36px}
+  .flag{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .nav-links{display:none}
+  .cards{grid-template-columns:1fr}
+  h1{font-size:31px}
+  .hero{padding-top:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
 </style>
-<script>
-(function () {
-  var el = document.documentElement;
-  var timer = setTimeout(function () { el.classList.add('xsdz-slow'); }, 400);
-  var done = function () { clearTimeout(timer); el.classList.add('xsdz-ready'); };
-  if (document.readyState !== 'loading') { done(); }
-  else {
-    document.addEventListener('DOMContentLoaded', done);
-    window.addEventListener('load', done);
-  }
-})();
-</script>
 </head>
 <body>
 
-<!-- 背景层 -->
-<div class="bg-layer" aria-hidden="true">
-  <div class="bg-grid"></div>
-  <div class="bg-glow glow-a"></div>
-  <div class="bg-glow glow-b"></div>
-  <div class="bg-scan"></div>
-  <div class="bg-noise"></div>
-</div>
-<div class="cursor-spot" aria-hidden="true"></div>
-
-<!-- 顶部导航 -->
-<header class="nav" id="nav">
-  <div class="nav-inner">
-    <a class="brand" href="#home">
-      <img class="brand-img" id="brandImg" alt="" hidden />
-      <span class="brand-mark" id="brandMark">
-        <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
-          <path d="M9 23 L16 7 L23 23 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-          <path d="M12.6 18.4 h6.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span class="brand-text" id="brandText">锈蚀死域</span>
-    </a>
-    <nav class="nav-links" id="navLinks"></nav>
-    <a class="btn btn-ghost nav-cta" id="navCta" href="#download">下载客户端</a>
-    <button class="nav-burger" id="navBurger" aria-label="菜单">
-      <span></span><span></span>
-    </button>
+<header class="nav" id="topnav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#"><span class="logo">畏</span>畏惧了的软件总站 <span class="ver">wjl.qd.je</span></a>
+    <nav class="nav-links">
+      <a href="#projects">项目</a>
+      <a href="/xiushi/">锈蚀死域</a>
+      <a href="/awesevo/">AwesEvo</a>
+      <a href="https://github.com/2993262905" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <a class="btn small" href="https://github.com/2993262905" target="_blank" rel="noopener" style="margin-left:8px">GitHub 主页</a>
   </div>
 </header>
 
-<main>
-
-  <!-- Hero -->
-  <section class="hero" id="home">
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <div class="badge" id="heroBadge">
-          <span class="badge-dot"></span><span id="heroBadgeText">加载中…</span>
-        </div>
-        <h1 class="hero-title">
-          <span id="heroTitleTop">锈蚀死域</span><span class="grad" id="heroTitleBottom">社区</span>
-        </h1>
-        <p class="hero-sub" id="heroSub"></p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" id="heroPrimary" href="#download">
-            <span id="heroPrimaryText">立即下载</span>
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a class="btn btn-ghost" id="heroSecondary" href="#download"><span id="heroSecondaryText">查看更新日志</span></a>
-        </div>
-        <div class="hero-stats" id="heroStats"></div>
-      </div>
-
-      <div class="hero-visual">
-        <div class="terminal" id="terminal">
-          <div class="terminal-bar">
-            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-            <span class="terminal-title" id="terminalTitle">xsdz-launcher</span>
-          </div>
-          <div class="terminal-body" id="terminalBody"></div>
-        </div>
-        <div class="hero-card" id="heroCard">
-          <img id="heroCardImg" alt="" hidden />
-          <div class="hero-card-fallback" id="heroCardFallback">
-            <svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true">
-              <defs>
-                <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="var(--accent)"/>
-                  <stop offset="1" stop-color="var(--accent-2)"/>
-                </linearGradient>
-              </defs>
-              <circle cx="60" cy="60" r="46" fill="none" stroke="url(#hg)" stroke-width="1.2" opacity=".5"/>
-              <circle cx="60" cy="60" r="34" fill="none" stroke="url(#hg)" stroke-width="1.2" opacity=".35"/>
-              <path d="M36 78 L60 26 L84 78 Z" fill="none" stroke="url(#hg)" stroke-width="2.6" stroke-linejoin="round"/>
-              <path d="M48 66 h24" stroke="url(#hg)" stroke-width="2.6" stroke-linecap="round"/>
-            </svg>
-            <p>RUSTY DEADZONE</p>
-            <em class="hero-card-hint">主视觉图位 · 后台「首屏 Hero → 右侧主视觉图片」可替换</em>
-          </div>
-        </div>
-      </div>
+<div class="wrap">
+  <!-- ============ Hero ============ -->
+  <div class="hero">
+    <span class="eyebrow"><i></i>散装软件 · 统一门面</span>
+    <h1>一大堆乱七八糟的软件，<br>总得有个<span class="hl">正经门面</span>。</h1>
+    <p class="lede">社区 App、AI 工作台、小游戏……平时散落在各个角落的项目，都收进这一页。有的正经在更新，有的纯属练手——挨个看吧。</p>
+    <div class="meta-row">
+      <span><b>5 个项目</b></span><span class="dot-sep"></span>
+      <span>持续增加中</span><span class="dot-sep"></span>
+      <span>全是亲手攒的</span>
     </div>
-    <div class="hero-marquee"><div class="marquee-track" id="marqueeTrack"></div></div>
-  </section>
-
-  <!-- 特性 -->
-  <section class="section" id="features">
-    <div class="section-head">
-      <span class="eyebrow" id="featuresEyebrow">CORE FEATURES</span>
-      <h2 class="section-title" id="featuresTitle">为硬核而生</h2>
-      <p class="section-sub" id="featuresSub"></p>
-    </div>
-    <div class="feature-grid" id="featureGrid"></div>
-  </section>
-
-  <!-- 图集 -->
-  <section class="section" id="gallery">
-    <div class="section-head">
-      <span class="eyebrow" id="galleryEyebrow">SCREENSHOTS</span>
-      <h2 class="section-title" id="galleryTitle">锈蚀世界</h2>
-      <p class="section-sub" id="gallerySub"></p>
-    </div>
-    <div class="gallery-grid" id="galleryGrid"></div>
-  </section>
-
-  <!-- 下载 -->
-  <section class="section section-download" id="download">
-    <div class="download-panel">
-      <div class="download-head">
-        <div>
-          <span class="eyebrow" id="downloadEyebrow">DOWNLOAD</span>
-          <h2 class="section-title" id="downloadTitle">获取锈蚀死域</h2>
-          <p class="section-sub" id="downloadSub"></p>
-        </div>
-        <div class="version-box">
-          <div class="version-row"><span>最新版本</span><strong id="dlVersion">v3.2.0</strong></div>
-          <div class="version-row"><span>安装包大小</span><strong id="dlSize">4.86 GB</strong></div>
-          <div class="version-row"><span>更新时间</span><strong id="dlUpdated">2026-10-01</strong></div>
-          <div class="version-row"><span>校验</span><strong class="mono" id="dlHash">SHA-256</strong></div>
-        </div>
-      </div>
-      <div class="platform-grid" id="platformGrid"></div>
-      <div class="mirror-row">
-        <span class="mirror-label">镜像线路</span>
-        <div class="mirror-list" id="mirrorList"></div>
-      </div>
-      <p class="download-note" id="downloadNote"></p>
-    </div>
-  </section>
-
-  <!-- 关于 -->
-  <section class="section" id="about">
-    <div class="about-grid">
-      <div class="about-copy">
-        <span class="eyebrow" id="aboutEyebrow">ABOUT US</span>
-        <h2 class="section-title" id="aboutTitle">关于锈蚀死域社区</h2>
-        <div id="aboutParagraphs"></div>
-      </div>
-      <div class="about-points" id="aboutPoints"></div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <span class="brand-mark small">
-        <svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true">
-          <path d="M9 23 L16 7 L23 23 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-        </svg>
-      </span>
-      <span id="footerBrandText">锈蚀死域社区</span>
-    </div>
-    <div class="footer-links" id="footerLinks"></div>
-    <div class="footer-copy" id="footerCopy"></div>
-    <div class="footer-icp" id="footerIcp"></div>
   </div>
-</footer>
 
-<script src="/assets/app.js"></script>
+  <!-- ============ 项目 ============ -->
+  <section id="projects">
+    <div class="reveal">
+      <div class="kicker">Projects</div>
+      <h2>项目一览</h2>
+      <p class="sub">旗舰在上面，其余按顺手顺序排。点进分站看详细介绍，能下载的都在分站里。</p>
+    </div>
+
+    <div class="flag reveal">
+      <div>
+        <div class="f-head">
+          <div class="ic">⚙️</div>
+          <h3>锈蚀死域社区 App</h3>
+          <span class="badge amber">测试中</span>
+        </div>
+        <p>铁锈战争模组社区的口袋客户端：看帖、找 Mod、聊天，再加一个 AI 值班答疑。本站的头号项目——这个总站的根域名，原本就是它的官网。</p>
+        <div class="acts">
+          <a class="btn" href="/xiushi/">进入分站</a>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="r"><span>内容</span><span>帖子 · Mod · 聊天 · AI 答疑</span></div>
+        <div class="r"><span>平台</span><span>Android</span></div>
+        <div class="r"><span>状态</span><span>测试中</span></div>
+        <div class="r"><span>分站</span><span>介绍 + 下载</span></div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card reveal">
+        <div class="c-head"><div class="ic">🤖</div><h3>AwesEvo</h3><span class="badge blue">v0.1.0</span></div>
+        <p>完全在本机运行的 AI Agent 工作台：自己接 API、执行计划看得见、权限分三档。单文件 exe，下载双击就能用。</p>
+        <div class="acts">
+          <a class="btn small" href="/awesevo/">产品页</a>
+          <a class="btn small ghost" href="https://github.com/2993262905/awesevo-ai-agent" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="c-head"><div class="ic">🎮</div><h3>《治哈》</h3><span class="badge gray">开发中</span></div>
+        <p>Three.js 真 3D 网页小游戏：摆标点符号当守卫，别让一波波「哈」把墙冲垮。好玩是好玩，试玩版还在整理。</p>
+        <div class="acts"><span class="soon">试玩版整理中，敬请期待</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="c-head"><div class="ic">💬</div><h3>灵聊</h3><span class="badge green">已上线</span></div>
+        <p>网页聊天应用：打开就能进的公共大厅，不用注册，不用下载，轻量直接。</p>
+        <div class="acts">
+          <a class="btn small" href="https://d9582f3cee364398a6c4d76b4fec216a.sg2.agentos-app.run" target="_blank" rel="noopener">打开灵聊</a>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="c-head"><div class="ic">🧩</div><h3>rw-community</h3><span class="badge green">开源</span></div>
+        <p>铁锈战争社区平台：Node.js + Express + Vue 3 的全栈练手之作，也是锈蚀死域的网页端前辈。</p>
+        <div class="acts">
+          <a class="btn small ghost" href="https://github.com/2993262905/rw-community" target="_blank" rel="noopener">GitHub 仓库</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-in">
+      <span><b style="color:var(--text-2)">畏惧了的软件总站</b> · wjl.qd.je</span>
+      <span class="sp"></span>
+      <a href="/xiushi/">锈蚀死域</a>
+      <a href="/awesevo/">AwesEvo</a>
+      <a href="https://github.com/2993262905" target="_blank" rel="noopener">GitHub 主页</a>
+      <a class="egg" href="/dyd/">丁文迪专页</a>
+      <span>© <span id="yr">2026</span> 畏惧了 · 本站由吓哭了搭建</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+// 年份
+document.getElementById('yr').textContent = new Date().getFullYear();
+// 导航阴影
+var nav = document.getElementById('topnav');
+addEventListener('scroll', function(){ nav.classList.toggle('scrolled', scrollY > 8); }, {passive:true});
+// 滚动显现（不支持 IO 或开了减少动态时直接全显）
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    els.forEach(function(e){ e.classList.add('in'); }); return;
+  }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold: .12});
+  els.forEach(function(e){ io.observe(e); });
+})();
+</script>
 </body>
 </html>

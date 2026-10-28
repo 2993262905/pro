@@ -297,8 +297,8 @@ if (matchMedia('(pointer:fine)').matches && !reduced) {
       el.style.setProperty('--my', (ev.clientY - r.top) + 'px');
       var px = (ev.clientX - r.left) / r.width - 0.5;
       var py = (ev.clientY - r.top) / r.height - 0.5;
-      el.style.setProperty('--ry', (px * 10) + 'deg');
-      el.style.setProperty('--rx', (-py * 10) + 'deg');
+      el.style.setProperty('--ry', (px * 14) + 'deg');
+      el.style.setProperty('--rx', (-py * 14) + 'deg');
     });
     el.addEventListener('mouseleave', function(){
       el.style.setProperty('--rx', '0deg');
@@ -327,7 +327,7 @@ document.querySelectorAll('.btn').forEach(function(b){
     els.forEach(function(e){ e.classList.add('in'); }); return;
   }
   var io = new IntersectionObserver(function(es){
-    es.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    es.forEach(function(en){ if (en.isIntersecting) { var t = en.target; t.classList.add('in'); io.unobserve(t); setTimeout(function(){ t.style.transitionDelay = '0s'; }, 700); } });
   }, {threshold: .12});
   els.forEach(function(e){ io.observe(e); });
 })();

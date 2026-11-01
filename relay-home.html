@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>吓哭了中转站</title>
+<style>html,body{margin:0}</style>
+</head>
+<body>
+<!-- ============================================================================
+  吓哭了中转站 · 首页内容（适配 New API）
+  ----------------------------------------------------------------------------
+  粘贴位置：后台 → 系统设置 → 内容设置 → 首页内容
+  （英文界面：Settings → System Settings → Content → Home Page Content）
+
+  为什么这里没有任何 script / link / meta 标签：
+  New API 会把这段 HTML 渲染进 Shadow DOM，并经过 DOMPurify 过滤，
+  上述标签会被直接删除。所以这里的交互全部用纯 CSS 实现：
+    · 代码切换  →  radio + :checked
+    · 常见问题  →  原生 <details>
+    · 打字机    →  逐字 span + animation-delay
+    · 复制地址  →  user-select:all（点一下全选）
+
+  主题：会自动跟随后台的明暗主题（组件会给容器加 .dark 类）。
+  想强制深色，把最外层 class="xkl" 改成 class="xkl xkl-dark"。
+
+  已按吓哭了中转站改好：域名 zz.299326.xyz，模型为当前免费层
+  ============================================================================ -->
+<div class="xkl">
+
+<style>
+/* ============================================================
+   1. 配色变量（浅色为默认，深色覆盖）
+   ============================================================ */
+.xkl{
+  --x-bg:#fbfbfe;
+  --x-bg-2:#ffffff;
+  --x-panel:#ffffff;
+  --x-panel-2:#f6f7fc;
+  --x-ink:#0d1020;
+  --x-ink-2:#3a4160;
+  --x-muted:#646b85;
+  --x-line:rgba(13,16,32,.09);
+  --x-line-2:rgba(13,16,32,.15);
+  --x-v:#6d4cff;
+  --x-b:#3d6bff;
+  --x-c:#0891b2;
+  --x-m:#db2777;
+  --x-ok:#0f9d58;
+  --x-warn:#b45309;
+  --x-grad:linear-gradient(100deg,#6d4cff,#0284c7 45%,#db2777);
+  --x-btn-grad:linear-gradient(100deg,#7c5cff,#4d6bff 55%,#3b82f6);
+  --x-btn-ink:#ffffff;
+  --x-shadow:0 1px 2px rgba(13,16,32,.05),0 16px 36px -20px rgba(13,16,32,.18);
+  --x-shadow-lg:0 2px 4px rgba(13,16,32,.05),0 30px 60px -28px rgba(20,24,60,.3);
+  --x-card-bg:linear-gradient(180deg,#ffffff,#fafbff);
+  --x-card-bg-2:rgba(255,255,255,.72);
+  --x-glow-1:rgba(124,92,255,.3);
+  --x-glow-2:rgba(34,180,238,.24);
+  --x-glow-3:rgba(236,72,153,.16);
+  --x-grid:rgba(13,16,32,.045);
+  --x-code-bg:#0b0d15;
+  --x-code-ink:#c8cee2;
+  --x-code-line:rgba(255,255,255,.07);
+  --x-code-head:rgba(255,255,255,.02);
+  --x-tw:34ms;
+}
+
+.dark .xkl,
+.xkl.xkl-dark{
+  --x-bg:#05060a;
+  --x-bg-2:#080a11;
+  --x-panel:rgba(255,255,255,.042);
+  --x-panel-2:rgba(255,255,255,.02);
+  --x-ink:#eef0f8;
+  --x-ink-2:#b8bed2;
+  --x-muted:#868da4;
+  --x-line:rgba(255,255,255,.085);
+  --x-line-2:rgba(255,255,255,.16);
+  --x-v:#a78bfa;
+  --x-b:#6d9bff;
+  --x-c:#22d3ee;
+  --x-m:#ff5cc8;
+  --x-ok:#3ddc97;
+  --x-warn:#ffb86b;
+  --x-grad:linear-gradient(100deg,#c9b6ff,#8be9ff 42%,#ff9ade);
+  --x-btn-grad:linear-gradient(100deg,#a78bfa,#6d8cff 45%,#31d8f0);
+  --x-btn-ink:#07080e;
+  --x-shadow:0 18px 40px -26px rgba(0,0,0,.9);
+  --x-shadow-lg:0 60px 140px -60px rgba(124,92,255,.65);
+  --x-card-bg:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012));
+  --x-card-bg-2:rgba(255,255,255,.035);
+  --x-glow-1:rgba(124,92,255,.5);
+  --x-glow-2:rgba(34,211,238,.3);
+  --x-glow-3:rgba(255,92,200,.22);
+  --x-grid:rgba(255,255,255,.04);
+  --x-code-bg:#0a0c13;
+  --x-code-ink:#c3c9dd;
+  --x-code-line:rgba(255,255,255,.06);
+  --x-code-head:rgba(255,255,255,.016);
+}
+
+/* ============================================================
+   2. 基础
+   ============================================================ */
+.xkl,
+.xkl *,
+.xkl *::before,
+.xkl *::after{box-sizing:border-box}
+
+/* 这两条只在「单独打开本文件预览」时生效；
+   在 Shadow DOM 里不存在 html/body 元素，等于没写，不会污染 New API 的页面 */
+html,body{margin:0}
+
+.xkl{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:var(--x-bg);
+  color:var(--x-ink);
+  font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  text-align:left;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.xkl a{color:inherit;text-decoration:none}
+.xkl p{margin:0}
+.xkl ul,.xkl ol{margin:0;padding:0;list-style:none}
+.xkl img,.xkl svg{display:block;max-width:100%}
+.xkl pre,.xkl code{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.xkl ::selection{background:rgba(109,76,255,.22)}
+
+/* ============================================================
+   3. 背景装饰
+   ============================================================ */
+/* 装饰层只覆盖首屏高度：用 px/vw 定位，避免百分比跟随整页高度跑偏 */
+.xkl-bg{position:absolute;top:0;left:0;right:0;height:1200px;z-index:-2;pointer-events:none;overflow:hidden}
+.xkl-bg i{position:absolute;display:block;border-radius:50%}
+.xkl-bg i:nth-child(1){
+  width:74vw;height:74vw;left:-18vw;top:-24vw;
+  background:radial-gradient(circle,var(--x-glow-1),transparent 62%);
+  animation:xkl-drift1 26s ease-in-out infinite alternate;
+}
+.xkl-bg i:nth-child(2){
+  width:62vw;height:62vw;right:-16vw;top:-20vw;
+  background:radial-gradient(circle,var(--x-glow-2),transparent 62%);
+  animation:xkl-drift2 32s ease-in-out infinite alternate;
+}
+.xkl-bg i:nth-child(3){
+  width:52vw;height:52vw;left:28vw;top:34vw;
+  background:radial-gradient(circle,var(--x-glow-3),transparent 62%);
+  animation:xkl-drift3 38s ease-in-out infinite alternate;
+}
+@keyframes xkl-drift1{to{transform:translate3d(7%,5%,0) scale(1.12)}}
+@keyframes xkl-drift2{to{transform:translate3d(-8%,9%,0) scale(.92)}}
+@keyframes xkl-drift3{to{transform:translate3d(5%,-7%,0) scale(1.14)}}
+
+.xkl-grid{
+  position:absolute;top:0;left:0;right:0;height:1200px;
+  z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(var(--x-grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--x-grid) 1px,transparent 1px);
+  background-size:68px 68px;
+  -webkit-mask-image:radial-gradient(ellipse 78% 62% at 50% 0%,#000 4%,transparent 72%);
+  mask-image:radial-gradient(ellipse 78% 62% at 50% 0%,#000 4%,transparent 72%);
+}
+
+/* ============================================================
+   4. 布局与通用排版
+   ============================================================ */
+.xkl-wrap{max-width:1160px;margin:0 auto;padding:0 26px}
+.xkl-sec{padding:104px 0}
+
+.xkl-eyebrow{
+  display:inline-block;
+  font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--x-v);margin:0 0 16px;font-weight:600;
+}
+.xkl-h2{
+  font-size:clamp(26px,3.6vw,42px);
+  line-height:1.16;letter-spacing:-.025em;font-weight:750;
+  margin:0 0 14px;color:var(--x-ink);
+}
+.xkl-sub{color:var(--x-muted);font-size:16px;line-height:1.7;max-width:600px;margin:0}
+.xkl-head{margin-bottom:48px}
+.xkl-grad{
+  background:var(--x-grad);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;
+}
+
+/* 按钮 */
+.xkl-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:14px 26px;border-radius:99px;
+  font-size:15px;font-weight:600;line-height:1.2;
+  border:1px solid transparent;
+  transition:transform .35s cubic-bezier(.22,.68,.24,1),box-shadow .35s,background .3s,border-color .3s;
+  white-space:nowrap;
+}
+.xkl-btn svg{width:16px;height:16px;flex:none;transition:transform .35s cubic-bezier(.22,.68,.24,1)}
+.xkl-btn-p{
+  background:var(--x-btn-grad);color:var(--x-btn-ink);
+  box-shadow:0 12px 30px -12px rgba(109,76,255,.75);
+}
+.xkl-btn-p:hover{transform:translateY(-2px);box-shadow:0 20px 44px -14px rgba(109,76,255,.85)}
+.xkl-btn-p:hover svg{transform:translateX(4px)}
+.xkl-btn-g{
+  background:var(--x-panel);border-color:var(--x-line-2);color:var(--x-ink);
+  box-shadow:var(--x-shadow);
+}
+.xkl-btn-g:hover{transform:translateY(-2px);border-color:var(--x-v)}
+
+/* 卡片 */
+.xkl-card{
+  position:relative;
+  padding:26px 22px;
+  border-radius:18px;
+  background:var(--x-card-bg);
+  border:1px solid var(--x-line);
+  box-shadow:var(--x-shadow);
+  transition:transform .45s cubic-bezier(.22,.68,.24,1),box-shadow .45s,border-color .45s;
+}
+.xkl-card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(109,76,255,.42);
+  box-shadow:var(--x-shadow-lg);
+}
+
+/* ============================================================
+   5. Hero
+   ============================================================ */
+.xkl-hero{padding:74px 0 0;text-align:center}
+.xkl-hero-in{display:flex;flex-direction:column;align-items:center}
+
+.xkl-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:7px 14px;border-radius:99px;
+  background:var(--x-panel);border:1px solid var(--x-line-2);
+  box-shadow:var(--x-shadow);
+  font-size:12.5px;color:var(--x-ink-2);
+}
+.xkl-badge b{
+  font-size:10.5px;letter-spacing:.08em;font-weight:700;
+  padding:3px 9px;border-radius:99px;color:var(--x-btn-ink);
+  background:var(--x-btn-grad);
+}
+.xkl-dot{
+  width:6px;height:6px;border-radius:50%;flex:none;
+  background:var(--x-ok);
+  animation:xkl-pulse 2.4s ease-out infinite;
+}
+@keyframes xkl-pulse{
+  0%{box-shadow:0 0 0 0 rgba(61,220,151,.55)}
+  70%{box-shadow:0 0 0 9px rgba(61,220,151,0)}
+  100%{box-shadow:0 0 0 0 rgba(61,220,151,0)}
+}
+
+.xkl-h1{
+  font-size:clamp(26px,calc(9.3vw - 2px),74px);
+  line-height:1.07;letter-spacing:-.035em;font-weight:800;
+  margin:24px 0 0;color:var(--x-ink);
+}
+.xkl-lead{
+  margin:22px auto 0;max-width:620px;
+  font-size:clamp(15px,1.5vw,17px);line-height:1.75;color:var(--x-ink-2);
+}
+.xkl-lead b{color:var(--x-ink);font-weight:650}
+.xkl-nw{white-space:nowrap}
+
+.xkl-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:34px}
+
+.xkl-ep{
+  display:inline-flex;align-items:center;gap:12px;margin-top:26px;
+  padding:8px 16px;border-radius:99px;
+  background:var(--x-panel);border:1px solid var(--x-line);
+  box-shadow:var(--x-shadow);
+  max-width:100%;
+}
+.xkl-ep span{
+  font-size:10px;letter-spacing:.16em;color:var(--x-muted);
+  flex:none;font-weight:600;
+}
+.xkl-ep code{
+  font-size:12.8px;color:var(--x-ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  -webkit-user-select:all;user-select:all;cursor:copy;
+}
+.xkl-ep em{font-style:normal;color:var(--x-c)}
+
+/* ============================================================
+   6. 预览窗 + 打字机
+   ============================================================ */
+.xkl-visual{position:relative;margin-top:64px;width:100%}
+.xkl-win{
+  position:relative;width:100%;max-width:900px;margin:0 auto;
+  border-radius:20px;overflow:hidden;
+  background:var(--x-bg-2);
+  border:1px solid var(--x-line);
+  box-shadow:var(--x-shadow-lg);
+}
+.dark .xkl-win,.xkl.xkl-dark .xkl-win{
+  background:linear-gradient(180deg,#111320,#08090f);
+  border-color:rgba(255,255,255,.1);
+}
+.xkl-win-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:13px 16px;border-bottom:1px solid var(--x-line);
+  background:var(--x-panel-2);
+}
+.xkl-dots{display:flex;gap:6px;flex:none}
+.xkl-dots i{width:10px;height:10px;border-radius:50%;display:block}
+.xkl-dots i:nth-child(1){background:#ff5f57}
+.xkl-dots i:nth-child(2){background:#febc2e}
+.xkl-dots i:nth-child(3){background:#28c840}
+.xkl-win-url{
+  flex:1;text-align:center;font-size:11.5px;color:var(--x-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.xkl-win-url b{color:var(--x-ink-2);font-weight:600}
+.xkl-win-ok{
+  display:inline-flex;align-items:center;gap:6px;flex:none;
+  font-size:10.5px;padding:3px 9px;border-radius:99px;
+  color:var(--x-ok);background:rgba(15,157,88,.1);border:1px solid rgba(15,157,88,.25);
+}
+.xkl-win-ok::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+
+.xkl-win-body{padding:24px 24px 16px;display:flex;flex-direction:column;gap:20px;text-align:left}
+.xkl-msg{display:flex;gap:12px}
+.xkl-msg-me{justify-content:flex-end}
+.xkl-bubble{
+  max-width:80%;padding:12px 17px;border-radius:16px 16px 4px 16px;
+  background:linear-gradient(120deg,rgba(109,76,255,.14),rgba(61,107,255,.1));
+  border:1px solid rgba(109,76,255,.26);
+  font-size:14.5px;line-height:1.6;color:var(--x-ink);
+}
+.dark .xkl-bubble,.xkl.xkl-dark .xkl-bubble{
+  background:linear-gradient(120deg,rgba(124,92,255,.26),rgba(77,124,255,.18));
+  border-color:rgba(124,92,255,.32);
+  color:#e4e7f5;
+}
+.xkl-ava{
+  width:30px;height:30px;border-radius:9px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--x-btn-grad);color:var(--x-btn-ink);
+  font-size:14px;font-weight:800;
+  box-shadow:0 6px 18px -8px rgba(109,76,255,.85);
+}
+.xkl-ai{min-width:0;flex:1}
+.xkl-ai-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px}
+.xkl-ai-meta b{font-size:12.5px;font-weight:600;color:var(--x-ink)}
+.xkl-ai-meta span{
+  font-size:10.5px;color:var(--x-muted);
+  padding:2px 7px;border-radius:5px;background:var(--x-panel-2);
+  border:1px solid var(--x-line);
+}
+.xkl-ai-text{margin:0;font-size:14.8px;line-height:1.8;color:var(--x-ink-2);min-height:1.8em}
+
+/* 逐字出现 */
+.xkl-tw span{
+  opacity:1;
+  animation:xkl-tw 1ms linear both;
+  animation-delay:calc(var(--i) * var(--x-tw));
+}
+@keyframes xkl-tw{0%{opacity:0}100%{opacity:1}}
+.xkl-caret{
+  display:inline-block;width:7px;height:15px;margin-left:2px;
+  vertical-align:-2px;border-radius:2px;
+  background:var(--x-c);
+  animation:xkl-blink 1s steps(1) infinite;
+}
+@keyframes xkl-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+.xkl-composer{
+  display:flex;align-items:center;gap:12px;
+  margin:2px 24px 20px;padding:11px 12px 11px 18px;
+  border-radius:14px;border:1px solid var(--x-line);
+  background:var(--x-panel-2);
+}
+.xkl-composer .xkl-ph{flex:1;font-size:13.5px;color:var(--x-muted);text-align:left}
+.xkl-send{
+  width:32px;height:32px;border-radius:9px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--x-btn-grad);color:var(--x-btn-ink);
+}
+.xkl-send svg{width:15px;height:15px}
+
+.xkl-win-foot{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  padding:15px 22px;border-top:1px solid var(--x-line);
+  background:var(--x-panel-2);
+}
+.xkl-chip{
+  font-size:10.5px;color:var(--x-muted);
+  padding:4px 10px;border-radius:6px;
+  background:var(--x-panel);border:1px solid var(--x-line);
+}
+.xkl-chip-ok{color:var(--x-ok);border-color:rgba(15,157,88,.28);background:rgba(15,157,88,.08)}
+
+/* ============================================================
+   7. 跑马灯
+   ============================================================ */
+.xkl-mq{
+  margin-top:84px;padding:24px 0;overflow:hidden;
+  border-top:1px solid var(--x-line);border-bottom:1px solid var(--x-line);
+  background:var(--x-panel-2);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+}
+.xkl-mq-track{display:flex;width:max-content;animation:xkl-mq 46s linear infinite}
+.xkl-mq:hover .xkl-mq-track{animation-play-state:paused}
+@keyframes xkl-mq{to{transform:translateX(-50%)}}
+.xkl-mq-g{display:flex;align-items:center;gap:42px;padding-right:42px}
+.xkl-mq-item{
+  display:flex;align-items:center;gap:12px;flex:none;
+  font-size:14px;color:var(--x-muted);white-space:nowrap;
+}
+.xkl-mq-item i{width:4px;height:4px;border-radius:50%;background:var(--x-line-2);display:block;flex:none}
+
+/* ============================================================
+   8. 数据条
+   ============================================================ */
+.xkl-stats{padding:72px 0 0}
+.xkl-stats-in{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--x-line);border-radius:20px;
+  background:var(--x-card-bg);
+  box-shadow:var(--x-shadow);
+  overflow:hidden;
+}
+.xkl-stat{padding:32px 22px;text-align:center;position:relative}
+.xkl-stat + .xkl-stat::before{
+  content:"";position:absolute;left:0;top:24%;height:52%;width:1px;
+  background:var(--x-line);
+}
+.xkl-stat b{
+  display:block;
+  font-size:clamp(28px,3.4vw,40px);font-weight:750;letter-spacing:-.03em;line-height:1;
+  color:var(--x-ink);
+  font-variant-numeric:tabular-nums;
+}
+.xkl-stat b small{font-size:.52em;font-weight:600;margin-left:2px}
+.xkl-stat span{display:block;font-size:12.5px;color:var(--x-muted);margin-top:10px}
+
+/* ============================================================
+   9. 模型卡
+   ============================================================ */
+.xkl-models{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.xkl-m-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.xkl-tag{
+  font-size:10.5px;letter-spacing:.08em;padding:4px 9px;border-radius:5px;
+  color:var(--x-v);background:rgba(109,76,255,.1);border:1px solid rgba(109,76,255,.24);
+  font-weight:600;
+}
+.xkl-tag-2{color:var(--x-c);background:rgba(8,145,178,.1);border-color:rgba(8,145,178,.24)}
+.xkl-tag-3{color:var(--x-m);background:rgba(219,39,119,.1);border-color:rgba(219,39,119,.24)}
+.xkl-tag-4{color:var(--x-warn);background:rgba(180,83,9,.1);border-color:rgba(180,83,9,.24)}
+.xkl-m-ico{width:26px;height:26px;opacity:.55;flex:none}
+.xkl-models h3{
+  font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+  margin:0 0 10px;color:var(--x-ink);word-break:break-all;
+}
+.xkl-models p{font-size:13px;line-height:1.68;color:var(--x-muted);margin:0 0 16px;min-height:4.2em}
+.xkl-spec{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.xkl-spec li{
+  font-size:10.5px;color:var(--x-muted);padding:3px 8px;border-radius:5px;
+  background:var(--x-panel-2);border:1px solid var(--x-line);
+}
+.xkl-m-id{
+  display:block;
+  font-size:11px;color:var(--x-muted);
+  padding-top:13px;border-top:1px solid var(--x-line);
+  -webkit-user-select:all;user-select:all;cursor:copy;
+}
+.xkl-more{
+  display:flex;justify-content:center;margin-top:30px;
+}
+.xkl-more a{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13.5px;font-weight:600;color:var(--x-v);
+  padding:10px 20px;border-radius:99px;
+  border:1px solid var(--x-line-2);background:var(--x-panel);
+  transition:gap .3s,border-color .3s,color .3s;
+}
+.xkl-more a:hover{gap:13px;border-color:var(--x-v)}
+.xkl-more svg{width:14px;height:14px}
+
+/* ============================================================
+   10. 代码 tab（纯 CSS）
+   ============================================================ */
+.xkl-qs{display:grid;grid-template-columns:1.42fr .9fr;gap:32px;align-items:start}
+.xkl-qs > *{min-width:0}
+
+.xkl-tabs{position:relative}
+.xkl-tabs > input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.xkl-tabbar{
+  display:flex;gap:4px;padding:5px;width:fit-content;margin-bottom:14px;
+  border-radius:12px;background:var(--x-panel-2);border:1px solid var(--x-line);
+}
+.xkl-tabbar label{
+  padding:8px 15px;border-radius:8px;cursor:pointer;
+  font-size:12.8px;color:var(--x-muted);
+  transition:background .25s,color .25s;white-space:nowrap;
+}
+.xkl-tabbar label:hover{color:var(--x-ink-2)}
+#xkl-t1:checked ~ .xkl-tabbar label[for="xkl-t1"],
+#xkl-t2:checked ~ .xkl-tabbar label[for="xkl-t2"],
+#xkl-t3:checked ~ .xkl-tabbar label[for="xkl-t3"],
+#xkl-t4:checked ~ .xkl-tabbar label[for="xkl-t4"]{
+  background:var(--x-panel);color:var(--x-ink);
+  box-shadow:var(--x-shadow);font-weight:600;
+}
+#xkl-t1:focus-visible ~ .xkl-tabbar label[for="xkl-t1"],
+#xkl-t2:focus-visible ~ .xkl-tabbar label[for="xkl-t2"],
+#xkl-t3:focus-visible ~ .xkl-tabbar label[for="xkl-t3"],
+#xkl-t4:focus-visible ~ .xkl-tabbar label[for="xkl-t4"]{
+  outline:2px solid var(--x-v);outline-offset:2px;
+}
+
+.xkl-code{
+  border-radius:16px;overflow:hidden;
+  background:var(--x-code-bg);
+  border:1px solid var(--x-line);
+  box-shadow:var(--x-shadow-lg);
+}
+.xkl-code-head{
+  display:flex;align-items:center;gap:9px;
+  padding:11px 14px;border-bottom:1px solid var(--x-code-line);
+  background:var(--x-code-head);
+  font-size:11.5px;color:#6f768e;
+}
+.xkl-code-head .fdot{width:6px;height:6px;border-radius:50%;background:#7c5cff;flex:none}
+.xkl-code-body{padding:20px 18px;overflow-x:auto}
+.xkl-code-body pre{
+  margin:0;font-size:12.8px;line-height:1.85;
+  color:var(--x-code-ink);white-space:pre;tab-size:2;
+}
+.xkl-pane{display:none}
+.xkl-pane-1{display:block}
+#xkl-t2:checked ~ .xkl-code .xkl-pane-1,
+#xkl-t3:checked ~ .xkl-code .xkl-pane-1,
+#xkl-t4:checked ~ .xkl-code .xkl-pane-1{display:none}
+#xkl-t2:checked ~ .xkl-code .xkl-pane-2,
+#xkl-t3:checked ~ .xkl-code .xkl-pane-3,
+#xkl-t4:checked ~ .xkl-code .xkl-pane-4{display:block}
+.xkl-fname::after{content:"request.sh"}
+#xkl-t2:checked ~ .xkl-code .xkl-fname::after{content:"main.py"}
+#xkl-t3:checked ~ .xkl-code .xkl-fname::after{content:"index.mjs"}
+#xkl-t4:checked ~ .xkl-code .xkl-fname::after{content:"stream.py"}
+
+.x-s{color:#8fe3a8}
+.x-k{color:#c79bff}
+.x-c{color:#525a70;font-style:italic}
+.x-n{color:#ffb86b}
+
+/* 步骤 */
+.xkl-steps{position:relative}
+.xkl-steps li{position:relative;padding:0 0 24px 44px}
+.xkl-steps li::before{
+  content:"";position:absolute;left:15px;top:26px;bottom:0;width:1px;
+  background:linear-gradient(180deg,var(--x-line-2),transparent);
+}
+.xkl-steps li:last-child{padding-bottom:0}
+.xkl-steps li:last-child::before{display:none}
+.xkl-steps .n{
+  position:absolute;left:0;top:0;width:32px;height:32px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;color:var(--x-v);
+  background:rgba(109,76,255,.1);border:1px solid rgba(109,76,255,.26);
+}
+.xkl-steps h4{font-size:14.5px;font-weight:600;margin:4px 0 6px;color:var(--x-ink)}
+.xkl-steps p{font-size:13px;line-height:1.7;color:var(--x-muted)}
+.xkl-steps code{
+  font-size:11.5px;color:var(--x-v);
+  background:rgba(109,76,255,.1);padding:1px 5px;border-radius:4px;
+}
+
+/* ============================================================
+   11. 特性 bento
+   ============================================================ */
+.xkl-bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.xkl-b3{grid-column:span 3}
+.xkl-b2{grid-column:span 2}
+.xkl-ico{
+  width:40px;height:40px;border-radius:12px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(150deg,rgba(109,76,255,.16),rgba(8,145,178,.08));
+  border:1px solid rgba(109,76,255,.2);
+}
+.xkl-ico svg{width:19px;height:19px;stroke:var(--x-v);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.xkl-bento h3{font-size:16px;font-weight:650;letter-spacing:-.01em;margin:0 0 9px;color:var(--x-ink)}
+.xkl-bento p{font-size:13.2px;line-height:1.72;color:var(--x-muted)}
+.xkl-bento p code{
+  font-size:12px;color:var(--x-v);background:rgba(109,76,255,.1);
+  padding:1px 5px;border-radius:4px;
+}
+.xkl-mini{
+  margin-top:18px;padding:13px 15px;border-radius:11px;
+  background:var(--x-code-bg);border:1px solid var(--x-code-line);
+  font-size:11.5px;line-height:1.9;color:var(--x-code-ink);
+  overflow-x:auto;white-space:pre;
+}
+
+/* ============================================================
+   12. 免费额度
+   ============================================================ */
+.xkl-free{
+  position:relative;border-radius:24px;overflow:hidden;
+  border:1px solid var(--x-line-2);
+  background:linear-gradient(160deg,rgba(109,76,255,.07),var(--x-panel) 42%,rgba(8,145,178,.05));
+  box-shadow:var(--x-shadow);
+}
+.dark .xkl-free,.xkl.xkl-dark .xkl-free{
+  background:linear-gradient(160deg,rgba(124,92,255,.12),rgba(255,255,255,.02) 42%,rgba(34,211,238,.07));
+}
+.xkl-free-in{position:relative;padding:48px 44px 42px}
+.xkl-free-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:28px;flex-wrap:wrap;margin-bottom:36px;
+}
+.xkl-free-head .xkl-h2{margin:0;max-width:14em}
+.xkl-price{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--x-muted)}
+.xkl-price b{
+  font-size:42px;font-weight:750;letter-spacing:-.04em;line-height:1;
+  background:var(--x-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.xkl-free-cols{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+.xkl-free-col h4{
+  display:flex;align-items:center;gap:9px;
+  font-size:13px;font-weight:600;margin:0 0 16px;color:var(--x-ink);
+}
+.xkl-bar{width:3px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--x-v),var(--x-c));flex:none}
+.xkl-free-col.warn .xkl-bar{background:linear-gradient(180deg,var(--x-warn),var(--x-m))}
+.xkl-list{display:flex;flex-direction:column;gap:12px}
+.xkl-list li{display:flex;gap:10px;font-size:13.4px;line-height:1.65;color:var(--x-ink-2)}
+.xkl-list li svg{width:16px;height:16px;flex:none;margin-top:3px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.xkl-list .yes svg{stroke:var(--x-ok)}
+.xkl-list .no svg{stroke:var(--x-warn)}
+.xkl-list b{color:var(--x-ink);font-weight:600}
+.xkl-free-foot{
+  margin:34px 0 0;padding-top:22px;border-top:1px solid var(--x-line);
+  font-size:12.3px;color:var(--x-muted);
+  display:flex;align-items:center;gap:9px;
+}
+.xkl-free-foot svg{width:14px;height:14px;flex:none;stroke:var(--x-muted);fill:none;stroke-width:1.8}
+
+/* ============================================================
+   13. FAQ
+   ============================================================ */
+.xkl-faq-wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:48px;align-items:start}
+.xkl-faq-item{border-bottom:1px solid var(--x-line)}
+.xkl-faq-item:first-child{border-top:1px solid var(--x-line)}
+.xkl-faq-item summary{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:20px 4px;cursor:pointer;list-style:none;
+  font-size:15px;font-weight:600;color:var(--x-ink);
+  transition:color .25s;
+}
+.xkl-faq-item summary::-webkit-details-marker{display:none}
+.xkl-faq-item summary::marker{content:""}
+.xkl-plus{position:relative;width:16px;height:16px;flex:none}
+.xkl-plus::before,.xkl-plus::after{
+  content:"";position:absolute;background:var(--x-muted);border-radius:2px;
+  transition:transform .35s cubic-bezier(.22,.68,.24,1),background .25s;
+}
+.xkl-plus::before{left:0;top:7px;width:16px;height:1.5px}
+.xkl-plus::after{left:7px;top:0;width:1.5px;height:16px}
+.xkl-faq-item[open] summary{color:var(--x-v)}
+.xkl-faq-item[open] .xkl-plus::before{background:var(--x-v)}
+.xkl-faq-item[open] .xkl-plus::after{transform:rotate(90deg);background:var(--x-v)}
+.xkl-ans{padding:0 40px 22px 4px;font-size:13.6px;line-height:1.8;color:var(--x-muted)}
+.xkl-ans code{
+  font-size:12px;color:var(--x-v);background:rgba(109,76,255,.1);
+  padding:1px 5px;border-radius:4px;
+}
+.xkl-faq-aside .xkl-card{padding:26px 22px}
+.xkl-faq-aside h3{font-size:15px;font-weight:650;margin:0 0 9px;color:var(--x-ink)}
+.xkl-faq-aside p{font-size:13px;line-height:1.72;color:var(--x-muted);margin:0 0 18px;min-height:0}
+.xkl-aside-link{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;color:var(--x-v);
+  transition:gap .3s;
+}
+.xkl-aside-link:hover{gap:12px}
+.xkl-aside-link svg{width:13px;height:13px}
+
+/* ============================================================
+   14. CTA
+   ============================================================ */
+.xkl-cta-sec{padding:20px 0 96px}
+.xkl-cta-box{
+  position:relative;overflow:hidden;text-align:center;
+  padding:64px 32px;border-radius:24px;
+  border:1px solid var(--x-line-2);
+  background:linear-gradient(170deg,rgba(109,76,255,.1),var(--x-panel) 45%,rgba(8,145,178,.07));
+  box-shadow:var(--x-shadow-lg);
+}
+.dark .xkl-cta-box,.xkl.xkl-dark .xkl-cta-box{
+  background:linear-gradient(170deg,rgba(124,92,255,.18),rgba(8,9,15,.7) 45%,rgba(34,211,238,.1));
+}
+.xkl-cta-box h2{
+  font-size:clamp(26px,4vw,46px);line-height:1.14;letter-spacing:-.03em;font-weight:800;
+  margin:0 0 16px;color:var(--x-ink);
+}
+.xkl-cta-box p{color:var(--x-muted);font-size:15.5px;margin:0 auto 30px;max-width:480px;line-height:1.72}
+.xkl-cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ============================================================
+   15. 响应式
+   ============================================================ */
+@media (max-width:1024px){
+  .xkl-models{grid-template-columns:repeat(2,1fr)}
+  .xkl-qs{grid-template-columns:1fr;gap:36px}
+  .xkl-bento{grid-template-columns:repeat(4,1fr)}
+  .xkl-b3{grid-column:span 4}
+  .xkl-b2{grid-column:span 2}
+  .xkl-faq-wrap{grid-template-columns:1fr;gap:32px}
+}
+@media (max-width:860px){
+  .xkl-sec{padding:76px 0}
+  .xkl-hero{padding-top:52px}
+  .xkl-stats-in{grid-template-columns:repeat(2,1fr)}
+  .xkl-stat + .xkl-stat::before{display:none}
+  .xkl-stat:nth-child(3),.xkl-stat:nth-child(4){border-top:1px solid var(--x-line)}
+  .xkl-free-in{padding:36px 24px 30px}
+  .xkl-free-cols{grid-template-columns:1fr;gap:26px}
+  .xkl-cta-box{padding:48px 22px}
+  .xkl-mq{margin-top:64px}
+  .xkl-win-body{padding:20px 18px 14px}
+  .xkl-composer{margin:2px 18px 16px}
+  .xkl-bubble{max-width:88%}
+  .xkl-visual{margin-top:48px}
+}
+@media (max-width:640px){
+  .xkl-wrap{padding:0 18px}
+  .xkl-models{grid-template-columns:1fr}
+  .xkl-bento{grid-template-columns:1fr}
+  .xkl-b3,.xkl-b2{grid-column:span 1}
+  .xkl-models p{min-height:0}
+  .xkl-ep{gap:8px;padding:7px 13px}
+  .xkl-ep span{display:none}
+  .xkl-ep code{font-size:11.5px}
+  .xkl-cta{width:100%;flex-direction:column}
+  .xkl-cta .xkl-btn{width:100%}
+  .xkl-badge{font-size:11.5px;padding:6px 12px}
+  .xkl-badge b{display:none}
+  .xkl-tabbar{width:100%;overflow-x:auto}
+  .xkl-tabbar label{padding:8px 12px;font-size:12px}
+  .xkl-code-body{padding:16px 14px}
+  .xkl-code-body pre{font-size:11.6px;line-height:1.9}
+  .xkl-win-url{display:none}
+  .xkl-price b{font-size:34px}
+}
+
+/* ============================================================
+   16. 降低动效
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .xkl *,.xkl *::before,.xkl *::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+  .xkl-tw span{opacity:1}
+}
+</style>
+
+<div class="xkl-bg"><i></i><i></i><i></i></div>
+<div class="xkl-grid"></div>
+
+<!-- ======================= Hero ======================= -->
+<section class="xkl-hero">
+  <div class="xkl-wrap xkl-hero-in">
+
+    <div class="xkl-badge">
+      <span class="xkl-dot"></span>
+      Gemini 免费层已接入
+      <b>OpenAI 兼容</b>
+    </div>
+
+    <h1 class="xkl-h1">
+      把 Gemini 的免费额度<br>
+      <span class="xkl-grad">用到最后一滴</span>
+    </h1>
+
+    <p class="xkl-lead">
+      一个 Base URL，一把 Key，三行代码。<span class="xkl-nw">吓哭了中转站</span>把 Gemini 免费层包成<span class="xkl-nw">标准的</span>
+      <b>OpenAI 接口</b>——你现有的代码，几乎一个字都不用改。
+    </p>
+
+    <div class="xkl-cta">
+      <a class="xkl-btn xkl-btn-p" href="https://zz.299326.xyz/register">
+        免费注册拿 Key
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="xkl-btn xkl-btn-g" href="https://zz.299326.xyz/pricing">看看模型价格</a>
+    </div>
+
+    <div class="xkl-ep">
+      <span>BASE URL</span>
+      <code title="点一下全选">https://zz.299326.xyz<em>/v1</em></code>
+    </div>
+
+    <!-- 预览窗 -->
+    <div class="xkl-visual">
+      <div class="xkl-win">
+        <div class="xkl-win-bar">
+          <span class="xkl-dots"><i></i><i></i><i></i></span>
+          <span class="xkl-win-url"><b>POST</b> /v1/chat/completions</span>
+          <span class="xkl-win-ok">200 OK</span>
+        </div>
+        <div class="xkl-win-body">
+          <div class="xkl-msg xkl-msg-me">
+            <div class="xkl-bubble">用一句话说说，为什么要用中转站？</div>
+          </div>
+          <div class="xkl-msg">
+            <div class="xkl-ava">G</div>
+            <div class="xkl-ai">
+              <div class="xkl-ai-meta">
+                <b>gemini-3.8-flash</b>
+                <span>1.2s</span>
+                <span>386 tokens</span>
+              </div>
+              <p class="xkl-ai-text xkl-tw"><span style="--i:0">因</span><span style="--i:1">为</span><span style="--i:2">每</span><span style="--i:3">家</span><span style="--i:4">厂</span><span style="--i:5">商</span><span style="--i:6">的</span><span style="--i:7">地</span><span style="--i:8">址</span><span style="--i:9">、</span><span style="--i:10">鉴</span><span style="--i:11">权</span><span style="--i:12">、</span><span style="--i:13">字</span><span style="--i:14">段</span><span style="--i:15">名</span><span style="--i:16">都</span><span style="--i:17">不</span><span style="--i:18">一</span><span style="--i:19">样</span><span style="--i:20">。</span><span style="--i:21">中</span><span style="--i:22">转</span><span style="--i:23">站</span><span style="--i:24">把</span><span style="--i:25">它</span><span style="--i:26">们</span><span style="--i:27">统</span><span style="--i:28">一</span><span style="--i:29">成</span><span style="--i:30">一</span><span style="--i:31">套</span><span style="--i:32">&nbsp;</span><span style="--i:33">OpenAI</span><span style="--i:34">&nbsp;</span><span style="--i:35">协</span><span style="--i:36">议</span><span style="--i:37">—</span><span style="--i:38">—</span><span style="--i:39">换</span><span style="--i:40">模</span><span style="--i:41">型</span><span style="--i:42">，</span><span style="--i:43">只</span><span style="--i:44">改</span><span style="--i:45">一</span><span style="--i:46">行</span><span style="--i:47">字</span><span style="--i:48">符</span><span style="--i:49">串</span><span style="--i:50">。</span><span class="xkl-caret"></span></p>
+            </div>
+          </div>
+        </div>
+        <div class="xkl-composer">
+          <span class="xkl-ph">继续追问…</span>
+          <span class="xkl-send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+          </span>
+        </div>
+        <div class="xkl-win-foot">
+          <span class="xkl-chip xkl-chip-ok">openai-sdk ✓</span>
+          <span class="xkl-chip xkl-chip-ok">stream ✓</span>
+          <span class="xkl-chip">vision</span>
+          <span class="xkl-chip">1M context</span>
+          <span class="xkl-chip">free tier</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 跑马灯 -->
+  <div class="xkl-mq">
+    <div class="xkl-mq-track">
+      <div class="xkl-mq-g">
+        <span class="xkl-mq-item">gemini-3.8-flash</span><i></i>
+        <span class="xkl-mq-item">gemini-3.6-flash</span><i></i>
+        <span class="xkl-mq-item">gemini-3.5-flash-lite</span><i></i>
+        <span class="xkl-mq-item">gemini-3.1-flash-lite</span><i></i>
+        <span class="xkl-mq-item">OpenAI 兼容</span><i></i>
+        <span class="xkl-mq-item">SSE 流式</span><i></i>
+        <span class="xkl-mq-item">多模态输入</span><i></i>
+        <span class="xkl-mq-item">1M 上下文</span><i></i>
+        <span class="xkl-mq-item">gemini-3-flash-preview</span><i></i>
+      </div>
+      <div class="xkl-mq-g">
+        <span class="xkl-mq-item">gemini-3.8-flash</span><i></i>
+        <span class="xkl-mq-item">gemini-3.6-flash</span><i></i>
+        <span class="xkl-mq-item">gemini-3.5-flash-lite</span><i></i>
+        <span class="xkl-mq-item">gemini-3.1-flash-lite</span><i></i>
+        <span class="xkl-mq-item">OpenAI 兼容</span><i></i>
+        <span class="xkl-mq-item">SSE 流式</span><i></i>
+        <span class="xkl-mq-item">多模态输入</span><i></i>
+        <span class="xkl-mq-item">1M 上下文</span><i></i>
+        <span class="xkl-mq-item">gemini-3-flash-preview</span><i></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- 数据条 -->
+  <div class="xkl-wrap xkl-stats">
+    <div class="xkl-stats-in">
+      <div class="xkl-stat"><b>1<small>M</small></b><span>单次上下文 tokens</span></div>
+      <div class="xkl-stat"><b>4</b><span>已接入模型</span></div>
+      <div class="xkl-stat"><b>¥0</b><span>免费层起步</span></div>
+      <div class="xkl-stat"><b>3</b><span>行代码完成接入</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 模型 ======================= -->
+<section class="xkl-sec">
+  <div class="xkl-wrap">
+    <div class="xkl-head">
+      <span class="xkl-eyebrow">Models</span>
+      <h2 class="xkl-h2">现在能调用的<span class="xkl-grad">模型</span></h2>
+      <p class="xkl-sub">全部走 Gemini 免费层额度。够你把手上的想法先跑起来。</p>
+    </div>
+
+    <div class="xkl-models">
+      <article class="xkl-card">
+        <div class="xkl-m-top">
+          <span class="xkl-tag">主力</span>
+          <svg class="xkl-m-ico" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 5 10v7c0 6 4.7 9.6 11 11 6.3-1.4 11-5 11-11v-7L16 4Z"/><path d="M11 16l3.5 3.5L21 13"/></svg>
+        </div>
+        <h3>gemini-3.8-flash</h3>
+        <p>站里的默认主力，速度和质量最均衡。日常对话、写作、代码，先用它。</p>
+        <ul class="xkl-spec"><li>1M 上下文</li><li>多模态</li><li>思考模式</li></ul>
+        <code class="xkl-m-id">gemini-3.8-flash</code>
+      </article>
+
+      <article class="xkl-card">
+        <div class="xkl-m-top">
+          <span class="xkl-tag xkl-tag-2">备胎</span>
+          <svg class="xkl-m-ico" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 4 8 18h6.5L14 28l9.5-14H17l.5-10Z"/></svg>
+        </div>
+        <h3>gemini-3.6-flash</h3>
+        <p>主力的备胎，同样走免费层。主力限流时，换它顶上。</p>
+        <ul class="xkl-spec"><li>1M 上下文</li><li>多模态</li><li>低延迟</li></ul>
+        <code class="xkl-m-id">gemini-3.6-flash</code>
+      </article>
+
+      <article class="xkl-card">
+        <div class="xkl-m-top">
+          <span class="xkl-tag xkl-tag-3">轻量</span>
+          <svg class="xkl-m-ico" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3 7 17h7l-1 12 11-15h-7l1-11Z"/></svg>
+        </div>
+        <h3>gemini-3.5-flash-lite</h3>
+        <p>分类、抽取、批量清洗。便宜到你可以拿它当流水线里的螺丝钉随便刷。</p>
+        <ul class="xkl-spec"><li>1M 上下文</li><li>高并发</li><li>极低成本</li></ul>
+        <code class="xkl-m-id">gemini-3.5-flash-lite</code>
+      </article>
+
+      <article class="xkl-card">
+        <div class="xkl-m-top">
+          <span class="xkl-tag xkl-tag-4">稳定</span>
+          <svg class="xkl-m-ico" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="11"/><path d="M16 10v6l4 2.5"/></svg>
+        </div>
+        <h3>gemini-3.1-flash-lite</h3>
+        <p>更轻的 Flash-Lite，适合高频小任务。便宜到可以随便刷。</p>
+        <ul class="xkl-spec"><li>1M 上下文</li><li>多模态</li><li>长期可用</li></ul>
+        <code class="xkl-m-id">gemini-3.1-flash-lite</code>
+      </article>
+    </div>
+
+    <div class="xkl-more">
+      <a href="https://zz.299326.xyz/pricing">
+        查看全部模型与价格
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 接入 ======================= -->
+<section class="xkl-sec">
+  <div class="xkl-wrap">
+    <div class="xkl-head">
+      <span class="xkl-eyebrow">Quickstart</span>
+      <h2 class="xkl-h2">三行代码，<span class="xkl-grad">直接开跑</span></h2>
+      <p class="xkl-sub">不用装新 SDK，不用学新协议。你原来怎么调 OpenAI，现在就怎么调。</p>
+    </div>
+
+    <div class="xkl-qs">
+      <div class="xkl-tabs">
+        <input type="radio" name="xkltab" id="xkl-t1" checked>
+        <input type="radio" name="xkltab" id="xkl-t2">
+        <input type="radio" name="xkltab" id="xkl-t3">
+        <input type="radio" name="xkltab" id="xkl-t4">
+
+        <div class="xkl-tabbar">
+          <label for="xkl-t1">cURL</label>
+          <label for="xkl-t2">Python</label>
+          <label for="xkl-t3">Node.js</label>
+          <label for="xkl-t4">流式 SSE</label>
+        </div>
+
+        <div class="xkl-code">
+          <div class="xkl-code-head">
+            <span class="fdot"></span>
+            <span class="xkl-fname"></span>
+          </div>
+          <div class="xkl-code-body">
+<pre class="xkl-pane xkl-pane-1"><span class="x-c"># Key 在控制台 → 令牌 里生成</span>
+curl https://zz.299326.xyz/v1/chat/completions \
+  -H <span class="x-s">"Authorization: Bearer $XKL_API_KEY"</span> \
+  -H <span class="x-s">"Content-Type: application/json"</span> \
+  -d <span class="x-s">'{
+    "model": "gemini-3.8-flash",
+    "messages": [
+      { "role": "user", "content": "用一句话解释黑洞" }
+    ]
+  }'</span></pre>
+
+<pre class="xkl-pane xkl-pane-2"><span class="x-k">from</span> openai <span class="x-k">import</span> OpenAI
+
+client = OpenAI(
+    api_key=<span class="x-s">"sk-xkl-..."</span>,
+    base_url=<span class="x-s">"https://zz.299326.xyz/v1"</span>,
+)
+
+resp = client.chat.completions.create(
+    model=<span class="x-s">"gemini-3.8-flash"</span>,
+    messages=[{<span class="x-s">"role"</span>: <span class="x-s">"user"</span>, <span class="x-s">"content"</span>: <span class="x-s">"用一句话解释黑洞"</span>}],
+)
+
+<span class="x-k">print</span>(resp.choices[<span class="x-n">0</span>].message.content)</pre>
+
+<pre class="xkl-pane xkl-pane-3"><span class="x-k">import</span> OpenAI <span class="x-k">from</span> <span class="x-s">"openai"</span>;
+
+<span class="x-k">const</span> client = <span class="x-k">new</span> OpenAI({
+  apiKey: process.env.XKL_API_KEY,
+  baseURL: <span class="x-s">"https://zz.299326.xyz/v1"</span>,
+});
+
+<span class="x-k">const</span> resp = <span class="x-k">await</span> client.chat.completions.create({
+  model: <span class="x-s">"gemini-3.8-flash"</span>,
+  messages: [{ role: <span class="x-s">"user"</span>, content: <span class="x-s">"用一句话解释黑洞"</span> }],
+});
+
+console.log(resp.choices[<span class="x-n">0</span>].message.content);</pre>
+
+<pre class="xkl-pane xkl-pane-4">stream = client.chat.completions.create(
+    model=<span class="x-s">"gemini-3.8-flash"</span>,
+    messages=[{<span class="x-s">"role"</span>: <span class="x-s">"user"</span>, <span class="x-s">"content"</span>: <span class="x-s">"写一首关于中转站的诗"</span>}],
+    stream=<span class="x-k">True</span>,
+)
+
+<span class="x-k">for</span> chunk <span class="x-k">in</span> stream:
+    delta = chunk.choices[<span class="x-n">0</span>].delta.content
+    <span class="x-k">if</span> delta:
+        print(delta, end=<span class="x-s">""</span>, flush=<span class="x-k">True</span>)</pre>
+          </div>
+        </div>
+      </div>
+
+      <ol class="xkl-steps">
+        <li>
+          <span class="n">01</span>
+          <h4>注册并生成令牌</h4>
+          <p>登录后进「控制台 → 令牌」，点新建，复制 <code>sk-</code> 开头的那一串。</p>
+        </li>
+        <li>
+          <span class="n">02</span>
+          <h4>换掉 base_url</h4>
+          <p>把原来的地址改成 <code>https://zz.299326.xyz/v1</code>，其余参数不用动。</p>
+        </li>
+        <li>
+          <span class="n">03</span>
+          <h4>选个模型，发请求</h4>
+          <p>模型名照抄上面的列表，比如 <code>gemini-3.8-flash</code>。就完了。</p>
+        </li>
+        <li>
+          <span class="n">04</span>
+          <h4>看用量</h4>
+          <p>控制台的日志页能看每把令牌的请求数、token 消耗和错误率。</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 特性 ======================= -->
+<section class="xkl-sec">
+  <div class="xkl-wrap">
+    <div class="xkl-head">
+      <span class="xkl-eyebrow">Why XKL</span>
+      <h2 class="xkl-h2">该有的都有，<span class="xkl-grad">不该有的没有</span></h2>
+      <p class="xkl-sub">不堆功能，只把中转这件事做到足够顺。</p>
+    </div>
+
+    <div class="xkl-bento">
+      <article class="xkl-card xkl-b3">
+        <div class="xkl-ico"><svg viewBox="0 0 24 24"><path d="M8 6 3 12l5 6M16 6l5 6-5 6M13.5 4l-3 16"/></svg></div>
+        <h3>OpenAI 协议兼容</h3>
+        <p>把 base_url 换成我们，代码不用重写。openai 官方 SDK、LangChain、LlamaIndex、各种客户端，直接指过来就行。</p>
+        <div class="xkl-mini">client = OpenAI(
+  base_url="https://zz.299326.xyz/v1",
+  api_key="sk-..."
+)</div>
+      </article>
+
+      <article class="xkl-card xkl-b3">
+        <div class="xkl-ico"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-7 4 14 2.5-7h5"/></svg></div>
+        <h3>SSE 流式输出</h3>
+        <p>加一个 <code>"stream": true</code>，回复就一个字一个字往外吐。打字机效果不用自己实现，前端照常接。</p>
+        <div class="xkl-mini">data: {"choices":[{"delta":{"content":"因"}}]}
+data: [DONE]</div>
+      </article>
+
+      <article class="xkl-card xkl-b2">
+        <div class="xkl-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5-9 9"/></svg></div>
+        <h3>多模态输入</h3>
+        <p>图片、PDF、音频直接丢进去，不用先转文字。截图问 bug、拍菜单翻译，都能用。</p>
+      </article>
+
+      <article class="xkl-card xkl-b2">
+        <div class="xkl-ico"><svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2M2 12h20"/></svg></div>
+        <h3>1M 上下文</h3>
+        <p>整本书、整个代码库，一次塞进去。不用切片，不用先做 RAG。</p>
+      </article>
+
+      <article class="xkl-card xkl-b2">
+        <div class="xkl-ico"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7l8-4Z"/><path d="M12 11v3"/><circle cx="12" cy="8.2" r=".6" fill="currentColor" stroke="none"/></svg></div>
+        <h3>令牌与用量看板</h3>
+        <p>一个面板管住所有令牌：谁在用、用了多少、什么时候被限流，一眼看清。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 免费额度 ======================= -->
+<section class="xkl-sec">
+  <div class="xkl-wrap">
+    <div class="xkl-free">
+      <div class="xkl-free-in">
+        <div class="xkl-free-head">
+          <div>
+            <span class="xkl-eyebrow">Free Tier</span>
+            <h2 class="xkl-h2">免费层，是真的<span class="xkl-grad">不要钱</span></h2>
+          </div>
+          <div class="xkl-price"><b>¥0</b><span>/ 起步，额度用完即停</span></div>
+        </div>
+
+        <div class="xkl-free-cols">
+          <div class="xkl-free-col">
+            <h4><span class="xkl-bar"></span>免费层能做什么</h4>
+            <ul class="xkl-list">
+              <li class="yes"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>日常对话、写作、翻译、总结</span></li>
+              <li class="yes"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>代码生成、解释、找 bug</span></li>
+              <li class="yes"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>图片理解、PDF 摘要、表格抽取</span></li>
+              <li class="yes"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>原型验证、个人小工具、学习实验</span></li>
+            </ul>
+          </div>
+
+          <div class="xkl-free-col warn">
+            <h4><span class="xkl-bar"></span>需要知道的几件事</h4>
+            <ul class="xkl-list">
+              <li class="no"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a1.6 1.6 0 0 0 1.4 2.4h16.4a1.6 1.6 0 0 0 1.4-2.4L13.7 3.9a1.6 1.6 0 0 0-2.8 0Z"/></svg><span><b>有速率和每日上限</b>，超了会返回 429，带上 retry-after</span></li>
+              <li class="no"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a1.6 1.6 0 0 0 1.4 2.4h16.4a1.6 1.6 0 0 0 1.4-2.4L13.7 3.9a1.6 1.6 0 0 0-2.8 0Z"/></svg><span>免费层输入<b>可能被用于产品改进</b>，敏感数据别放</span></li>
+              <li class="no"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a1.6 1.6 0 0 0 1.4 2.4h16.4a1.6 1.6 0 0 0 1.4-2.4L13.7 3.9a1.6 1.6 0 0 0-2.8 0Z"/></svg><span>高峰期可能排队，<b>生产环境请做重试和降级</b></span></li>
+              <li class="no"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a1.6 1.6 0 0 0 1.4 2.4h16.4a1.6 1.6 0 0 0 1.4-2.4L13.7 3.9a1.6 1.6 0 0 0-2.8 0Z"/></svg><span>具体配额以 <b>Google 官方免费层规则</b> 为准，我们不额外加价</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="xkl-free-foot">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+          额度用完不会自动扣费，请求会直接返回错误码。想继续用，去控制台看当天的重置时间。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FAQ ======================= -->
+<section class="xkl-sec">
+  <div class="xkl-wrap">
+    <div class="xkl-head">
+      <span class="xkl-eyebrow">FAQ</span>
+      <h2 class="xkl-h2">你可能想问的</h2>
+    </div>
+
+    <div class="xkl-faq-wrap">
+      <div>
+        <details class="xkl-faq-item" open>
+          <summary>需要自己去 Google 申请 API Key 吗？<span class="xkl-plus"></span></summary>
+          <div class="xkl-ans">不需要。注册后在控制台生成一把 <code>sk-</code> 开头的令牌，上游的对接、轮换和限流都由中转站处理。</div>
+        </details>
+
+        <details class="xkl-faq-item">
+          <summary>免费层真的不要钱？会不会偷偷扣费？<span class="xkl-plus"></span></summary>
+          <div class="xkl-ans">免费层额度本身不收费，我们只做转发，不加价。额度耗尽时会返回明确的错误码，不会自动切换到付费通道，也不会静默扣费。</div>
+        </details>
+
+        <details class="xkl-faq-item">
+          <summary>支持流式输出吗？<span class="xkl-plus"></span></summary>
+          <div class="xkl-ans">支持。请求里加 <code>"stream": true</code>，返回标准 SSE，格式和 OpenAI 完全一致，前端可以直接用现成的解析器。</div>
+        </details>
+
+        <details class="xkl-faq-item">
+          <summary>图片和 PDF 怎么传？<span class="xkl-plus"></span></summary>
+          <div class="xkl-ans">图片用 OpenAI 的 <code>image_url</code> 结构，base64 或外链都行；PDF 建议直接走文件字段，或者先抽成文本再发。</div>
+        </details>
+
+        <details class="xkl-faq-item">
+          <summary>被限流了怎么办？<span class="xkl-plus"></span></summary>
+          <div class="xkl-ans">免费层有速率上限，触发时返回 <code>429</code> 并带 <code>retry-after</code>。按这个值退避重试就行，别硬刷——硬刷只会让冷却时间变长。</div>
+        </details>
+
+        <details class="xkl-faq-item">
+          <summary>和直接用官方 Gemini API 有什么区别？<span class="xkl-plus"></span></summary>
+          <div class="xkl-ans">协议统一成 OpenAI 格式、令牌由我们统一管理、多模型之间可以只改一个字符串就切换。功能上没有删减，多模态、流式、长上下文都保留。</div>
+        </details>
+      </div>
+
+      <aside class="xkl-faq-aside">
+        <div class="xkl-card">
+          <div class="xkl-ico"><svg viewBox="0 0 24 24"><path d="M21 14.5a2.5 2.5 0 0 1-2.5 2.5H8l-4 4V5.5A2.5 2.5 0 0 1 6.5 3h12A2.5 2.5 0 0 1 21 5.5v9Z"/><path d="M9 8.5h7M9 12h4"/></svg></div>
+          <h3>还是没找到答案？</h3>
+          <p>接入文档里有完整的请求体示例、错误码对照表，还有几个大家最常踩的坑。</p>
+          <a class="xkl-aside-link" href="https://zz.299326.xyz/about">
+            关于与联系方式
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= CTA ======================= -->
+<section class="xkl-cta-sec">
+  <div class="xkl-wrap">
+    <div class="xkl-cta-box">
+      <h2>别怕，免费额度<span class="xkl-grad">不咬人</span>。</h2>
+      <p>注册、生成令牌、改一行 base_url。三分钟之后，你就在调 Gemini 了。</p>
+      <div class="xkl-cta-row">
+        <a class="xkl-btn xkl-btn-p" href="https://zz.299326.xyz/register">
+          免费拿一把 Key
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="xkl-btn xkl-btn-g" href="https://zz.299326.xyz/pricing">看看模型价格</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吓哭了中转站 — API 中转站</title>
+<meta name="description" content="吓哭了中转站：给别人用的 API 中转站，主力 Gemini 3.8-flash，OpenAI 兼容格式，入口走唤醒页。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='45' font-size='34' font-family='sans-serif' font-weight='700' fill='white' text-anchor='middle'%3E%E7%95%8F%3C/text%3E%3C/svg%3E">
+<style>
+/* 与 AwesEvo 官网同一套设计变量 */
+:root{
+  --bg:#faf9f7; --panel:#ffffff; --soft:#f3f1ed; --soft-2:#eae7e1;
+  --border:#e6e2db; --border-2:#d5cfc6;
+  --text:#1b1a18; --text-2:#55514a; --text-3:#8a8479;
+  --accent:#2563eb; --accent-hover:#1d4ed8; --accent-soft:#e8f0fc;
+  --ok:#3f7d58; --ok-soft:#e9f3ed;
+  --shadow-sm:0 1px 2px rgba(28,25,20,.06);
+  --shadow:0 4px 16px -4px rgba(28,25,20,.12),0 1px 3px rgba(28,25,20,.06);
+  --shadow-lg:0 24px 64px -16px rgba(28,25,20,.28);
+  --r-sm:7px; --r:10px; --r-lg:14px;
+  --t-fast:120ms; --t-mid:200ms; --t-slow:320ms;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+body::before{content:"";position:fixed;left:-140px;bottom:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(146,96,15,.10),transparent 70%);pointer-events:none;z-index:0;animation:drift 18s ease-in-out infinite alternate-reverse}
+::selection{background:var(--accent-soft)}
+
+/* ---------- 阅读进度条 ---------- */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent),#7c3aed);z-index:100}
+
+/* ---------- 导航 ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(250,249,247,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);transition:box-shadow var(--t-mid) var(--ease)}
+.nav.scrolled{box-shadow:var(--shadow-sm)}
+.nav-in{display:flex;align-items:center;gap:28px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700;font-size:17px;letter-spacing:.2px}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:16px;font-weight:700;box-shadow:var(--shadow-sm);transition:transform var(--t-mid) var(--ease-spring)}
+.brand:hover .logo{transform:rotate(-8deg) scale(1.08)}
+.ver{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-soft);border:1px solid #cfdefa;padding:1px 7px;border-radius:99px}
+.nav-links{display:flex;gap:22px;margin-left:auto}
+.nav-links a{color:var(--text-2);font-size:14px;transition:color var(--t-fast) var(--ease);position:relative}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;height:2px;width:100%;background:var(--accent);border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform var(--t-mid) var(--ease)}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav .btn{white-space:nowrap;flex:none}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-weight:600;font-size:15px;padding:10px 20px;border-radius:var(--r);border:1px solid var(--accent);box-shadow:var(--shadow-sm);transition:all var(--t-fast) var(--ease);cursor:pointer}
+.btn:hover{background:var(--accent-hover);border-color:var(--accent-hover);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:translate(-50%,-50%) scale(0);animation:rip 600ms var(--ease) forwards;pointer-events:none}
+@keyframes rip{to{transform:translate(-50%,-50%) scale(4);opacity:0}}
+.btn:active{transform:scale(.98)}
+.btn.small{padding:7px 14px;font-size:14px}
+.btn.ghost{background:var(--panel);color:var(--text);border-color:var(--border-2)}
+.btn.ghost:hover{border-color:var(--text-3);background:var(--panel)}
+.btn .arr{display:inline-block;transition:transform var(--t-mid) var(--ease-spring)}
+.btn:hover .arr{transform:translateX(3px)}
+
+/* ---------- Hero ---------- */
+.hero{padding:68px 0 6px;position:relative}
+.hero::before{content:"";position:absolute;top:-120px;right:-80px;width:540px;height:540px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,.16),transparent 70%);pointer-events:none;animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-40px,30px) scale(1.12)}}
+.hero>*{position:relative;z-index:1}
+@keyframes rise{from{opacity:0;transform:translateY(34px) scale(.98);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes sweep{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+.hero .eyebrow{animation:rise 700ms var(--ease) both}
+.hero h1{animation:rise 700ms var(--ease) 100ms both}
+.hero .lede{animation:rise 700ms var(--ease) 200ms both}
+.hero .meta-row{animation:rise 700ms var(--ease) 300ms both}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--text-2);background:var(--panel);border:1px solid var(--border);border-radius:99px;padding:4px 12px;box-shadow:var(--shadow-sm)}
+.eyebrow i{width:7px;height:7px;border-radius:99px;background:var(--ok);display:inline-block;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(63,125,88,.35)}50%{box-shadow:0 0 0 5px rgba(63,125,88,0)}}
+h1{font-size:46px;line-height:1.16;font-weight:800;letter-spacing:-.5px;margin:20px 0 16px}
+h1 .hl{background:linear-gradient(90deg,var(--accent),#7c3aed,var(--accent));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sweep 6s ease-in-out infinite}
+.lede{font-size:17.5px;color:var(--text-2);max-width:36em}
+.meta-row{font-size:13px;color:var(--text-3);display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:20px}
+.meta-row b{color:var(--text-2);font-weight:600}
+.dot-sep{width:3px;height:3px;border-radius:99px;background:var(--border-2)}
+
+/* ---------- 区块 ---------- */
+section{padding:46px 0 8px}
+.kicker{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase}
+h2{font-size:30px;font-weight:800;letter-spacing:-.3px;margin:8px 0 10px}
+.sub{color:var(--text-2);max-width:44em}
+
+/* ---------- 徽章 ---------- */
+.badge{font-family:var(--mono);font-size:11px;font-weight:500;padding:1px 7px;border-radius:99px;border:1px solid;white-space:nowrap;flex:none}
+.badge.blue{background:var(--accent-soft);color:var(--accent);border-color:#cfdefa}
+.badge.green{background:var(--ok-soft);color:var(--ok);border-color:#cfe3d6}
+.badge.amber{background:#faf0dc;color:#92600f;border-color:#e8d5a8}
+.badge.gray{background:var(--soft);color:var(--text-2);border-color:var(--border)}
+
+/* ---------- 旗舰卡 ---------- */
+.flag{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:34px;margin-top:28px;display:grid;grid-template-columns:1.2fr 1fr;gap:34px;transition:all var(--t-mid) var(--ease);position:relative;overflow:hidden}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes spin{to{--angle:360deg}}
+.flag::before{content:"";position:absolute;inset:-2px;border-radius:16px;padding:2px;background:conic-gradient(from var(--angle),var(--accent),#7c3aed,#e8b84b,var(--accent));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity var(--t-mid) var(--ease);pointer-events:none}
+.flag:hover::before{opacity:1;animation:spin 3s linear infinite}
+.flag::after{content:"";position:absolute;inset:0;background:radial-gradient(240px at var(--mx,50%) var(--my,50%),rgba(37,99,235,.08),transparent 70%);opacity:0;transition:opacity var(--t-mid) var(--ease);pointer-events:none}
+.flag:hover::after{opacity:1}
+.flag:hover{border-color:var(--border-2)}
+.flag .f-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.flag .ic{width:46px;height:46px;border-radius:var(--r);background:var(--accent-soft);display:grid;place-items:center;font-size:23px;flex:none;transition:transform var(--t-mid) var(--ease-spring)}
+.flag:hover .ic{transform:scale(1.18) rotate(-8deg)}
+.flag h3{font-size:22px}
+.flag p{color:var(--text-2);font-size:14.5px}
+.flag .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.spec{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;font-size:14px;align-self:start}
+.spec .r{display:flex;justify-content:space-between;padding:9px 14px;background:var(--panel);transition:background var(--t-fast) var(--ease)}
+.spec .r:nth-child(odd){background:var(--soft)}
+.spec .r:hover{background:var(--accent-soft)}
+.spec .r span:first-child{color:var(--text-3)}
+.spec .r span:last-child{font-weight:600}
+
+/* ---------- 项目卡 ---------- */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:28px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow-sm);transition:all var(--t-mid) var(--ease);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(240px at var(--mx,50%) var(--my,50%),rgba(37,99,235,.08),transparent 70%);opacity:0;transition:opacity var(--t-mid) var(--ease);pointer-events:none}
+.card:hover::after{opacity:1}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--border-2)}
+.card .c-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.card .ic{width:38px;height:38px;border-radius:var(--r);background:var(--accent-soft);display:grid;place-items:center;font-size:19px;flex:none;transition:transform var(--t-mid) var(--ease-spring)}
+.card:hover .ic{transform:scale(1.18) rotate(-8deg)}
+.card h3{font-size:16.5px;line-height:38px}
+.card .c-head .badge{margin-left:auto;margin-top:8px}
+.card p{font-size:14px;color:var(--text-2);flex:1}
+.card .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.soon{font-size:13px;color:var(--text-3);padding:7px 0}
+
+/* ---------- 页脚 ---------- */
+footer{margin-top:70px;border-top:1px solid var(--border);padding:26px 0 34px;color:var(--text-3);font-size:13.5px}
+.foot-in{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.foot-in .sp{flex:1}
+.foot-in a{color:var(--text-2)}
+.foot-in a:hover{color:var(--text)}
+.foot-in a.egg{color:var(--text-3);font-size:12px;opacity:.65}
+.foot-in a.egg:hover{opacity:1;color:var(--text-2)}
+
+/* ---------- 动画 ---------- */
+.reveal{opacity:0;transform:translateY(28px) scale(.97);transition:opacity var(--t-slow) var(--ease),transform var(--t-slow) var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.cards .card:nth-child(1){transition-delay:0ms}
+.cards .card:nth-child(2){transition-delay:90ms}
+.cards .card:nth-child(3){transition-delay:180ms}
+.cards .card:nth-child(4){transition-delay:270ms}
+.cards .card.reveal.in:hover{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-4px)}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:960px){
+  h1{font-size:36px}
+  .flag{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .nav-links{display:none}
+  .ver{display:none}
+  .cards{grid-template-columns:1fr}
+  h1{font-size:31px}
+  .hero{padding-top:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+  .hero>*{animation:none;opacity:1;transform:none}
+  .hero::before{display:none}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="nav" id="topnav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/"><span class="logo">畏</span>畏惧了的软件总站</a>
+    <nav class="nav-links">
+      <a href="/">总站</a>
+      <a href="/xiushi/">锈蚀死域</a>
+      <a href="/awesevo/">AwesEvo</a>
+      <a href="/zhihha/">治哈</a>
+      <a href="/relay/">中转站</a>
+    </nav>
+    <a class="btn small" href="/" style="margin-left:8px">返回软件总站</a>
+  </div>
+</header>
+<div class="wrap">
+  <div class="hero">
+    <span class="eyebrow"><i></i>API 中转站 · 给别人用</span>
+    <h1>吓哭了<span class="hl">中转站</span>。</h1>
+    <p class="lede">给别人用的 API 中转站：后台填什么模型，接口就叫什么模型，不做暗地替换。免费层跑着，成本是 0；新账号默认 0 额度，凭兑换码开通。</p>
+    <div class="meta-row"><span><b>主力 gemini-3.8-flash</b></span> · <span>OpenAI 兼容</span> · <span>唤醒页进入</span></div>
+  </div>
+  <div class="flag reveal"><div><div class="f-head"><div class="ic">🛰️</div><h3>先唤醒，再进入</h3><span class="badge green">已上线</span></div><p>中转站跑在免费档上，闲置会休眠，直接点站址会先撞上等待页。所以入口统一走唤醒页：唤醒页会一直戳到服务醒来，再点“直接打开中转站”。</p><div class="acts"><a class="btn" href="https://299326.xyz/wake.html">打开唤醒页 <span class="arr">→</span></a></div></div><div class="spec"><div class="r"><span>站址</span><span>zz.299326.xyz</span></div><div class="r"><span>接口</span><span>zz.299326.xyz/v1</span></div><div class="r"><span>主力</span><span>gemini-3.8-flash</span></div><div class="r"><span>备胎</span><span>gemini-3.6-flash</span></div></div></div><section>
+    <div class="reveal"><div class="kicker">Models</div><h2>模型</h2><p class="sub">后台已接通的模型，按后台填的名字叫，不映射、不偷换。</p></div>
+    <div class="cards"><div class="card reveal"><div class="c-head"><div class="ic">✦</div><h3>gemini-3.8-flash</h3><span class="badge blue">主力</span></div><p>站里的默认主力，日常先用它。</p><div class="acts"></div></div><div class="card reveal"><div class="c-head"><div class="ic">✦</div><h3>gemini-3.6-flash</h3><span class="badge gray">备胎</span></div><p>3.8 限流时用它顶上。</p><div class="acts"></div></div><div class="card reveal"><div class="c-head"><div class="ic">✦</div><h3>gemini-3.5-flash-lite</h3><span class="badge gray">轻量</span></div><p>轻量，日常闲聊省额度。</p><div class="acts"></div></div><div class="card reveal"><div class="c-head"><div class="ic">✦</div><h3>gemini-3.1-flash-lite</h3><span class="badge gray">轻量</span></div><p>轻量，日常闲聊省额度。</p><div class="acts"></div></div></div>
+  </section><section>
+    <div class="reveal"><div class="kicker">Use</div><h2>怎么接</h2><p class="sub">OpenAI 兼容格式，自己的令牌在中转站后台 → 令牌里领。</p></div>
+    <div class="cards"><div class="card reveal"><div class="c-head"><div class="ic">🔑</div><h3>接口地址</h3><span class="badge blue">v1</span></div><p>https://zz.299326.xyz/v1 ，模型填 gemini-3.8-flash。</p><div class="acts"></div></div><div class="card reveal"><div class="c-head"><div class="ic">💬</div><h3>客户端</h3><span class="badge gray">任选</span></div><p>Chatbox、Cherry Studio 这类 OpenAI 兼容客户端都能接。</p><div class="acts"></div></div><div class="card reveal"><div class="c-head"><div class="ic">🎟️</div><h3>新账号</h3><span class="badge amber">0 额度</span></div><p>新注册默认 0 额度，凭兑换码开通，不实名、不绑卡那条线之外的别来。</p><div class="acts"></div></div></div>
+  </section>
+  <footer>
+    <div class="foot-in">
+      <span><b style="color:var(--text-2)">畏惧了的软件总站</b> · wjl.qd.je</span>
+      <span class="sp"></span>
+      <a href="/">总站</a>
+      <a href="/xiushi/">锈蚀死域</a>
+      <a href="/awesevo/">AwesEvo</a>
+      <span>© <span id="yr">2026</span> 畏惧了 · 本站由吓哭了搭建</span>
+    </div>
+  </footer>
+</div>
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+var nav = document.getElementById('topnav');
+var bar = document.getElementById('progress');
+addEventListener('scroll', function(){
+  nav.classList.toggle('scrolled', scrollY > 8);
+  var h = document.documentElement.scrollHeight - innerHeight;
+  bar.style.width = (h > 0 ? (scrollY / h * 100) : 0) + '%';
+}, {passive:true});
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold: .12});
+  els.forEach(function(e){ io.observe(e); });
+})();
+</script>
+</body>
+</html>

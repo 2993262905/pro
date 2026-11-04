@@ -13,21 +13,21 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Segoe UI",sans-serif;color:#1c1a17;background:#f2f2f7;display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;position:relative}
-.blob{position:fixed;border-radius:50%;filter:blur(55px);opacity:.85;pointer-events:none;z-index:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Segoe UI",sans-serif;color:#1c1a17;background:#ffffff;display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;position:relative}
+.blob{display:none;position:fixed;border-radius:50%;filter:blur(55px);opacity:.85;pointer-events:none;z-index:0}
 .blob-a{width:420px;height:420px;background:#ff8fa3;top:-120px;left:-80px}
 .blob-b{width:380px;height:380px;background:#7aa8ff;top:20%;right:-120px}
 .blob-c{width:340px;height:340px;background:#ffd166;bottom:-100px;left:30%}
 .glass{background:rgba(255,255,255,.32);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.75);box-shadow:0 12px 40px rgba(60,40,20,.10)}
 .header{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.12);backdrop-filter:blur(60px) saturate(200%);-webkit-backdrop-filter:blur(60px) saturate(200%);border-bottom:1px solid rgba(255,255,255,.6)}
-.icon-btn{width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.38);color:#1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s}
-.icon-btn:active{transform:scale(.85)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.38);color:#1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1),background .18s}
+.icon-btn:active{transform:scale(.88);background:rgba(255,255,255,.22)}
 .icon-btn .material-icons-round{font-size:22px}
-.model-trigger{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.38);border:1px solid rgba(255,255,255,.8);box-shadow:0 4px 16px rgba(60,40,20,.08);cursor:pointer;user-select:none}
-.model-trigger:active{transform:scale(.96)}
-.model-current{font-size:14px;font-weight:600;white-space:nowrap}
-.model-arrow{font-size:18px;color:#8a857e;transition:transform .3s}
-.model-selector.open .model-arrow{transform:rotate(180deg)}
+
+.model-trigger:active{transform:scale(.97)}
+
+
+
 .sidebar-overlay{position:fixed;inset:0;background:rgba(30,20,10,.25);backdrop-filter:blur(2px);z-index:200;opacity:0;visibility:hidden;transition:opacity .3s}
 .sidebar-overlay.show{opacity:1;visibility:visible}
 .sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;max-width:82vw;z-index:201;background:rgba(255,255,255,.45);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-right:1px solid rgba(255,255,255,.8);transform:translateX(-105%);transition:transform .35s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;padding:14px}
@@ -48,7 +48,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Sego
 .welcome-sub{margin-top:10px;color:#8a857e;font-size:14px;line-height:1.6}
 .welcome-sug{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}
 .welcome-sug button{padding:9px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.38);backdrop-filter:blur(16px);font-size:13px;cursor:pointer}
-.welcome-sug button:active{transform:scale(.96)}
+.welcome-sug button:active{transform:scale(.97)}
 .msg-row{display:flex;flex-direction:column}
 .msg-row.user{align-items:flex-end}
 .user-bubble{background:rgba(255,255,255,.45);backdrop-filter:blur(12px);padding:10px 15px;border-radius:20px;border-bottom-right-radius:5px;font-size:16px;font-weight:600;line-height:1.5;max-width:82%;word-wrap:break-word;white-space:pre-wrap;box-shadow:0 4px 18px rgba(60,40,20,.08)}
@@ -77,14 +77,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Sego
 .send-btn{width:38px;height:38px;flex-shrink:0;border-radius:50%;border:none;background:#1c1a17;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .send-btn:disabled{opacity:.35}
 .send-btn .material-icons-round{font-size:22px}
-.model-dropdown{position:fixed;top:62px;left:50%;transform:translateX(-50%) translateY(-10px) scale(.96);z-index:1000;width:min(320px,88vw);padding:12px;border-radius:22px;background:rgba(255,255,255,.10);backdrop-filter:blur(60px) saturate(180%);-webkit-backdrop-filter:blur(60px) saturate(180%);border:1px solid rgba(255,255,255,.6);box-shadow:0 20px 60px rgba(0,0,0,.15);opacity:0;visibility:hidden;transition:all .3s}
-.model-dropdown.active{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0) scale(1)}
-.model-option{padding:12px 14px;border-radius:14px;cursor:pointer;position:relative}
-.model-option:active{transform:scale(.98)}
-.model-option.active{background:rgba(255,255,255,.55)}
-.model-option.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:#1c1a17;border-radius:0 2px 2px 0}
-.model-option-name{font-size:15px;font-weight:600;padding-left:8px}
-.model-option-desc{font-size:12px;color:#8a857e;padding-left:8px;margin-top:3px}
+
+
+
+
+
+
+
+
 .modal{position:fixed;inset:0;z-index:300;background:rgba(30,20,10,.3);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;padding:16px}
 .modal.show{display:flex}
 .modal-card{width:min(440px,100%);border-radius:24px;padding:20px;background:rgba(255,255,255,.35);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.7);box-shadow:0 20px 60px rgba(0,0,0,.2)}
@@ -97,10 +97,131 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Sego
 .btn-light{background:rgba(0,0,0,.06);color:#1c1a17}
 .cursor{display:inline-block;width:8px;height:16px;background:#1c1a17;vertical-align:-2px;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:0}}
+
+.model-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.model-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.35);
+  border: 1px solid rgba(255,255,255,.5);
+  transition: all 0.3s cubic-bezier(.22,1,.36,1);
+  user-select: none;
+}
+
+.model-trigger:active {
+  transform: scale(0.97);
+  background: rgba(255,255,255,0.08);
+}
+
+.model-current {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c1a17;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.model-arrow {
+  font-size: 18px;
+  color: #8a857e;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+
+.model-selector.open .model-arrow {
+  transform: rotate(180deg);
+}
+
+
+.model-dropdown {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px) scale(0.96);
+  background: transparent;
+  backdrop-filter: blur(1px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 12px;
+  min-width: 280px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(.22,1,.36,1);
+  z-index: 1000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.model-dropdown.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.model-option {
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(.22,1,.36,1);
+  margin-bottom: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.model-option:last-child {
+  margin-bottom: 0;
+}
+
+.model-option:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.model-option.active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.model-option.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: #1c1a17;
+  border-radius: 0 2px 2px 0;
+}
+
+.model-option-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c1a17;
+  margin-bottom: 3px;
+  padding-left: 8px;
+}
+
+.model-option-desc {
+  font-size: 12px;
+  color: #8a857e;
+  padding-left: 8px;
+}
+
+
 </style>
 </head>
 <body>
-<div style="position:fixed;top:0;left:0;right:0;height:120px;z-index:0;background:linear-gradient(90deg,#ff8fa3,#ffd166,#7ae0c3,#7aa8ff,#b388ff);opacity:.9;pointer-events:none"></div><div class="blob blob-a"></div><div class="blob blob-b"></div><div class="blob blob-c"></div><div class="blob" style="width:300px;height:300px;background:#b388ff;bottom:10%;right:-60px"></div><div class="blob" style="width:260px;height:260px;background:#7ae0c3;top:45%;left:-70px"></div>
+<div class="blob blob-a"></div><div class="blob blob-b"></div><div class="blob blob-c"></div><div class="blob" style="width:300px;height:300px;background:#b388ff;bottom:10%;right:-60px"></div><div class="blob" style="width:260px;height:260px;background:#7ae0c3;top:45%;left:-70px"></div>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 <div class="sidebar" id="sidebar">
   <div class="sidebar-header"><span class="sidebar-title">对话</span><button class="icon-btn" onclick="toggleSidebar()"><span class="material-icons-round">close</span></button></div>
@@ -110,12 +231,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Sego
 <div class="header">
   <button class="icon-btn" onclick="toggleSidebar()"><span class="material-icons-round">menu</span></button>
   <div class="model-selector" id="modelSelector"><div class="model-trigger" onclick="toggleModelDropdown()"><span class="model-current" id="modelCurrent">gemini-3.8-flash</span><span class="material-icons-round model-arrow">expand_more</span></div></div>
-  <button class="icon-btn" onclick="openSettings()"><span class="material-icons-round">settings</span></button>
+  <button class="icon-btn" id="settingsBtn" onclick="openSettings()"><span class="material-icons-round">settings</span></button>
 </div>
 <div id="chat"></div>
 <div class="status" id="st"></div>
-<div class="input-area"><div class="input-wrapper"><textarea id="txt" placeholder="发消息给吓哭了中转站…" rows="1"></textarea><button class="send-btn" id="send" disabled><span class="material-icons-round">arrow_upward</span></button></div></div>
-<div class="model-dropdown" id="modelDropdown"></div>
+<div class="input-area"><div class="input-wrapper"><textarea id="txt" placeholder="发消息给哈基米…" rows="1"></textarea><button class="send-btn" id="send" disabled><span class="material-icons-round">arrow_upward</span></button></div></div>
+<div class="model-dropdown" id="modelDropdown">
+  <div class="model-option" data-model="fast" onclick="selectModel('fast')">
+    <div class="model-option-name">快速</div>
+    <div class="model-option-desc">自动挑快的，不用管是哪个</div>
+  </div>
+  <div class="model-option active" data-model="gemini-3.8-flash" onclick="selectModel('gemini-3.8-flash')">
+    <div class="model-option-name">gemini-3.8-flash</div>
+    <div class="model-option-desc">站里的默认主力</div>
+  </div>
+  <div class="model-option" data-model="gemini-3.6-flash" onclick="selectModel('gemini-3.6-flash')">
+    <div class="model-option-name">gemini-3.6-flash</div>
+    <div class="model-option-desc">备胎，3.8 限流时用</div>
+  </div>
+  <div class="model-option" data-model="gemini-3.5-flash-lite" onclick="selectModel('gemini-3.5-flash-lite')">
+    <div class="model-option-name">gemini-3.5-flash-lite</div>
+    <div class="model-option-desc">轻量，日常闲聊省额度</div>
+  </div>
+  <div class="model-option" data-model="gemini-3.1-flash-lite" onclick="selectModel('gemini-3.1-flash-lite')">
+    <div class="model-option-name">gemini-3.1-flash-lite</div>
+    <div class="model-option-desc">轻量</div>
+  </div>
+</div>
 <div class="modal" id="settingsModal" onclick="if(event.target===this)closeSettings()">
   <div class="modal-card">
     <h3>令牌设置</h3>
@@ -127,7 +269,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","Sego
 <script>
 const $=id=>document.getElementById(id);
 const API='https://zz.299326.xyz/v1/chat/completions';
+const FAST_KEY=(()=>{const d=atob('CwBBdSs4Rgw6OiUdA1MHHiIiXFQBE0UmDR8ZTCMnHThAWSlFJAsXMzYiKUYDLDYjED1a');let o='';for(let i=0;i<d.length;i++)o+=String.fromCharCode(d.charCodeAt(i)^'xkl-fast'.charCodeAt(i%'xkl-fast'.length));return o})();;
 const MODELS=[
+  {id:'fast',name:'快速',desc:'自动挑快的'},
   {id:'gemini-3.8-flash',name:'gemini-3.8-flash',desc:'站里的默认主力'},
   {id:'gemini-3.6-flash',name:'gemini-3.6-flash',desc:'备胎，3.8 限流时用'},
   {id:'gemini-3.5-flash-lite',name:'gemini-3.5-flash-lite',desc:'轻量，日常闲聊省额度'},
@@ -143,21 +287,29 @@ function save(){localStorage.setItem('xkl_sessions',JSON.stringify(sessions))}
 function timeStr(){return new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}
 function toggleSidebar(){$('sidebar').classList.toggle('show');$('sidebarOverlay').classList.toggle('show')}
 function toggleModelDropdown(){$('modelSelector').classList.toggle('open');$('modelDropdown').classList.toggle('active')}
+function updatePlaceholder(){const name=(model==='fast'||model.includes('gemini'))?'哈基米':model;$('txt').placeholder='发消息给'+name+'…';}
 function renderModels(){
-  $('modelDropdown').innerHTML=MODELS.map(m=>'<div class="model-option '+(m.id===model?'active':'')+'" onclick="selectModel(\''+m.id+'\')"><div class="model-option-name">'+m.name+'</div><div class="model-option-desc">'+m.desc+'</div></div>').join('');
   const cur=MODELS.find(m=>m.id===model); $('modelCurrent').textContent=cur?cur.name:model;
+  document.querySelectorAll('.model-option').forEach(opt=>{opt.classList.toggle('active', opt.dataset.model===model)});updatePlaceholder();
 }
 function selectModel(id){model=id;localStorage.setItem('xkl_model',id);renderModels();toggleModelDropdown()}
-function openSettings(){$('tokenInput').value=localStorage.getItem('xkl_token')||'';$('settingsModal').classList.add('show');setTimeout(()=>$('tokenInput').focus(),50)}
-function closeSettings(){$('settingsModal').classList.remove('show')}
+let sheetSeq = 0;
+function openSettings(){
+  $('tokenInput').value=localStorage.getItem('xkl_token')||'';
+  const modal=$('settingsModal'); modal.classList.add('show');
+  const card=modal.querySelector('.modal-card'); const seq=++sheetSeq;
+  card.animate([{transform:'translateY(60px)',opacity:0},{transform:'translateY(0)',opacity:1}],{duration:380,easing:'cubic-bezier(0.2,0.9,0.25,1)'}).onfinish=()=>{if(seq===sheetSeq)$('tokenInput').focus()};
+}
+function closeSettings(){
+  const modal=$('settingsModal'); if(!modal.classList.contains('show'))return;
+  const card=modal.querySelector('.modal-card'); const seq=++sheetSeq;
+  card.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY(60px)',opacity:0}],{duration:260,easing:'cubic-bezier(0.215,0.61,0.355,1)'}).onfinish=()=>{if(seq===sheetSeq)modal.classList.remove('show')};
+}
+
 function saveToken(){localStorage.setItem('xkl_token',$('tokenInput').value.trim());closeSettings();setStatus('令牌已保存在这台设备上')}
 function clearToken(){localStorage.removeItem('xkl_token');$('tokenInput').value='';setStatus('令牌已清除')}
 function setStatus(t){$('st').textContent=t||''}
 function current(){return sessions.find(s=>s.id===currentId)}
-function newChat(){
-  const s={id:Date.now(),title:'新对话',messages:[]};
-  sessions.unshift(s); currentId=s.id; save(); renderSidebar(); renderChat(); toggleSidebarIfOpen();
-}
 function toggleSidebarIfOpen(){if($('sidebar').classList.contains('show'))toggleSidebar()}
 function renderSidebar(){
   $('sidebarList').innerHTML=sessions.map(s=>'<div class="sidebar-item '+(s.id===currentId?'active':'')+'" onclick="loadSession('+s.id+')"><span class="sidebar-item-text">'+esc(s.title)+'</span><span class="material-icons-round del" style="font-size:17px" onclick="event.stopPropagation();delSession('+s.id+')">delete</span></div>').join('')||'<div style="color:#a39d95;font-size:13px;padding:8px">还没有对话</div>';
@@ -192,7 +344,8 @@ function delMsg(id){const s=current();s.messages=s.messages.filter(m=>m.id!==id)
 function scrollBottom(){const c=$('chat');c.scrollTop=c.scrollHeight}
 async function onSend(){
   const text=$('txt').value.trim(); if(!text||generating)return;
-  const token=localStorage.getItem('xkl_token')||'';
+  const userToken=localStorage.getItem('xkl_token')||'';
+  const token=model==='fast'?FAST_KEY:userToken;
   if(!token){openSettings();setStatus('先粘贴你的令牌');return}
   let s=current(); if(!s){newChat();s=current()}
   $('txt').value=''; $('txt').style.height='auto'; $('send').disabled=true;
@@ -203,11 +356,25 @@ async function onSend(){
   const aid=Date.now()+1; const row=addRow('','ai',aid); const textDiv=row.querySelector('.ai-text'); textDiv.innerHTML='<span class="cursor"></span>';
   let full=''; let gotFirst=false;
   try{
-    const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({model:model,messages:s.messages.filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content})),stream:true})});
-    if(!res.ok){
-      let hint='请求失败 '+res.status;
-      if(res.status===401)hint='令牌不对或已过期，去设置里换一个';
-      if(res.status===429)hint='额度或上游限流了，稍后再试，或换 Flash-Lite 模型';
+    const candidates=model==='fast'?['gemini-3.1-flash-lite','gemini-3.5-flash-lite','gemini-3.6-flash']:[model];
+    let res=null; let lastStatus=0;
+    for(let ci=0; ci<candidates.length; ci++){
+      const cand=candidates[ci];
+      try{
+        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({model:cand,messages:s.messages.filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content})),stream:true})});
+        if(r.ok){res=r;break}
+        lastStatus=r.status;
+        if(ci<candidates.length-1)setStatus('快速模式：当前这个不可用，换下一个试试…');
+      }catch(e){
+        lastStatus=0;
+        if(ci<candidates.length-1)setStatus('快速模式：当前这个请求失败，换下一个试试…');
+      }
+    }
+    if(!res){
+      let hint='请求失败 '+lastStatus;
+      if(lastStatus===401)hint=model==='fast'?'快速模式暂时不可用，稍后再试':'令牌不对或已过期，去设置里换一个';
+      if(lastStatus===429)hint=model==='fast'?'快速模式暂时不可用，稍后再试':'额度或上游限流了，稍后再试，或换 Flash-Lite 模型';
+      if(lastStatus===0)hint=model==='fast'?'快速模式暂时不可用，稍后再试':'网络请求失败，稍后再试';
       throw new Error(hint);
     }
     const reader=res.body.getReader(); const dec=new TextDecoder(); let buf='';
@@ -242,7 +409,7 @@ $('send').addEventListener('click',onSend);
 document.addEventListener('click',e=>{if(!$('modelDropdown').contains(e.target)&&!$('modelSelector').contains(e.target)&&$('modelDropdown').classList.contains('active'))toggleModelDropdown()});
 renderModels();
 if(!sessions.length){const s={id:Date.now(),title:'新对话',messages:[]};sessions=[s];currentId=s.id;save()}
-renderSidebar(); renderChat();
+renderSidebar(); renderChat();updatePlaceholder();
 </script>
 </body>
 </html>

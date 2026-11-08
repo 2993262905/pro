@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDZMOD 锈蚀死域 α-独立日 v1.7.4 -3D 展示页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(to bottom, #3d2914, #1a1a1a);
+            border-bottom: 3px solid #8b4513;
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #d4a574;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #a89f91;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+
+        .bgm-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .bgm-button {
+            background: linear-gradient(135deg, #8b4513, #cd853f);
+            border: 2px solid #a0522c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .bgm-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(205, 133, 63, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .units-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .unit-card {
+            background: linear-gradient(135deg, #2a1810 0%, #1a0f0a 100%);
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            aspect-ratio: 1;
+        }
+
+        .unit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(212, 165, 116, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .unit-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(212, 165, 116, 0.3);
+            border-color: #d4a574;
+        }
+
+        .unit-card:hover::before {
+            opacity: 1;
+        }
+
+        .unit-card.finale {
+            grid-column: 1 / -1;
+            aspect-ratio: 21 / 10;
+            border-color: #d4a574;
+            box-shadow: 0 0 40px rgba(212, 165, 116, 0.35);
+        }
+
+        .finale-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4a574, #8b4513);
+            color: #1a0f0a;
+            padding: 5px 14px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-image-container {
+            width: 100%;
+            height: 70%;
+            background: radial-gradient(circle, #3d2914, #1a1a1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .faction-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b4513, #cd853f);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            background: #3d2914;
+            color: #d4a574;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            border: 1px solid #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .unit-name {
+            font-size: 1.8em;
+            color: #d4a574;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #8b4513;
+        }
+
+        .stat-item {
+            font-size: 0.9em;
+            color: #a89f91;
+        }
+
+        .stat-value {
+            color: #d4a574;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2a1810, #1a0f0a);
+            border: 3px solid #d4a574;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(212, 165, 116, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            color: #d4a574;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-unit-name {
+            font-size: 2.5em;
+            color: #d4a574;
+            margin-bottom: 10px;
+        }
+
+        .modal-desc {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+
+        .modal-stats {
+            background: rgba(139, 69, 19, 0.2);
+            border: 2px solid #8b4513;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #a89f91;
+        }
+
+        .stat-data {
+            font-size: 1.2em;
+            color: #d4a574;
+            font-weight: bold;
+        }
+
+        .price-detail {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #d4a574;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #e0e0e0;
+        }
+
+        .footer {
+            background: linear-gradient(to top, #3d2914, #1a1a1a);
+            padding: 30px 20px;
+            margin-top: 50px;
+            border-top: 3px solid #8b4513;
+            text-align: center;
+        }
+
+        .footer-section {
+            margin-bottom: 20px;
+        }
+
+        .footer-title {
+            font-size: 1.5em;
+            color: #d4a574;
+            margin-bottom: 15px;
+        }
+
+        .footer-content {
+            font-size: 1.1em;
+            color: #a89f91;
+            line-height: 1.8;
+        }
+
+        .footer-highlight {
+            color: #cd853f;
+            font-weight: bold;
+        }
+
+        .group-link {
+            color: #d4a574;
+            text-decoration: underline;
+            font-size: 1.3em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .bgm-button {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .unit-card.finale {
+                grid-column: span 1;
+                aspect-ratio: 1;
+            }
+
+            .unit-name {
+                font-size: 1.4em;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .modal-unit-name {
+                font-size: 1.8em;
+            }
+
+            .modal-desc {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>RDZMOD 锈蚀死域</h1>
+        <p>α-独立日 v1.7.4 - 多阵营单位展示</p>
+    </div>
+
+    <div class="bgm-control">
+        <button class="bgm-button" id="bgm-toggle" title="播放/暂停音乐">🔇</button>
+    </div>
+
+    <audio id="bgm-player" loop>
+        <source src="bgm-1.ogg" type="audio/ogg">
+    </audio>
+
+    <div class="container">
+        <div class="units-container" id="units-container">
+            <!-- Unit cards will be generated here -->
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-section">
+            <h2 class="footer-title">模组信息</h2>
+            <div class="footer-content">
+                <p><span class="footer-highlight">多阵营模组</span>，包含反抗军、虫族、朽族、智械四个阵营的强力单位。</p>
+                <p style="margin-top: 15px;">
+                    <span class="footer-highlight">平衡建议：</span>
+                    <br>• 建议 2.5 倍 5000 资金以获得最佳体验
+                    <br>• 建议禁 T4 开局
+                    <br>• 建议启动实验性渲染获得最佳视觉效果
+                </p>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h2 class="footer-title">社区支持</h2>
+            <p>加入模组交流群：<span class="group-link">1037712022</span></p>
+        </div>
+    </div>
+
+    <div class="modal" id="info-modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-modal">×</button>
+            <div class="modal-header">
+                <div class="faction-tag" id="modal-faction"></div>
+                <h2 class="modal-unit-name" id="modal-name"></h2>
+                <div class="tier-badge" id="modal-tier"></div>
+            </div>
+            <div class="price-detail" id="modal-price"></div>
+            <p class="modal-desc" id="modal-desc"></p>
+            <div class="modal-stats">
+                <div class="stats-grid" id="modal-stats"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="vendor/three.min.js"></script>
+    <script>
+        // Load unit data
+        const unitData = {
+            "mod": "RDZMOD 锈蚀死域 α-独立日 v1.7.4",
+            "units": [
+                {
+                    "id": "beichuang",
+                    "faction": "反抗军",
+                    "tier": "T3",
+                    "name": "悲怆",
+                    "price": "9500 + 钨钢 800",
+                    "hp": 1500,
+                    "shield": 800,
+                    "range": 210,
+                    "speed": 1.3,
+                    "moveType": "AIR",
+                    "desc": "T3 激光战机，机动弱，激光武器，对地对空，持续高伤",
+                    "main_image": "beichuang/激光.png",
+                    "main_size": [104, 202]
+                },
+                {
+                    "id": "kelaken",
+                    "faction": "虫族",
+                    "tier": "T4",
+                    "name": "克拉肯",
+                    "price": "100000 + 生物质 11000 + 主巢基因 160",
+                    "hp": 43000,
+                    "range": 500,
+                    "speed": 0.35,
+                    "moveType": "AIR",
+                    "desc": "T4 主战单位，普隆贡特的核心制空力量，侧展约三十米。外壳由多层几丁质和金属沉积物复合而成，携带大量空中工虻巡飞护航，具备远程酸液喷射和低空突防能力，是虫群夺取制空权的主力。\n\n「原初的灾祸终将降临人间」",
+                    "main_image": "kelaken/主体.png",
+                    "main_size": [76, 155]
+                },
+                {
+                    "id": "baifuzhang",
+                    "faction": "朽族",
+                    "tier": "T4",
+                    "name": "百夫长",
+                    "price": "40000",
+                    "hp": 18000,
+                    "range": 380,
+                    "speed": 0.7,
+                    "moveType": "OVER_CLIFF（可越崖）",
+                    "desc": "T4 重型攻城器械，英雄单位，三足机甲，重型武装，对地对空。副炮需搭载武装技师启动，免疫瘫痪。",
+                    "main_image": "baifuzhang/百夫长主体.png",
+                    "main_size": [47, 171]
+                },
+                {
+                    "id": "jisizhiyi",
+                    "faction": "智械",
+                    "tier": "超级空军",
+                    "name": "既死之翼",
+                    "price": "1250000 + 微晶体 85000 + 核心算力 450",
+                    "hp": 100000,
+                    "range": 850,
+                    "speed": 0.2,
+                    "moveType": "AIR",
+                    "desc": "第一次 AI 战争爆发第四个月，安佩瑞斯完成建造并激活该舰。全舰由 AI 神经网络统辖，无有机生命体乘员。\n\n「万机之神不需要怜悯。」\n\n搭载次空间扰动炮、自适应能量护盾、长距离折跃裂隙、二联自动导弹发射器、二联旋风鱼雷、八连重火炮发射器。\n\n「其现身即意味通讯静默与轨道清场——既死之翼不接收投降信号」",
+                    "main_image": "jisizhiyi/既死之翼.png",
+                    "main_size": [240, 470]
+                }
+            ]
+        };
+
+        // Canvas store for each unit
+        const canvases = {};
+
+        // Initialize Three.js scenes for each unit card
+        function initUnitCards() {
+            unitData.units.forEach((unit, index) => {
+                const container = document.createElement('div');
+                container.className = 'unit-card' + (unit.id === 'jisizhiyi' ? ' finale' : '');
+                container.innerHTML = `
+                    <div class="card-image-container" id="canvas-container-${index}"></div>
+                    <div class="card-info">
+                        ${unit.id === 'jisizhiyi' ? '<div class="finale-badge">★ 压轴旗舰</div>' : ''}
+                        <div class="faction-tag">${unit.faction}</div>
+                        <div class="tier-badge">${unit.tier}</div>
+                        <div class="unit-name">${unit.name}</div>
+                        <div class="card-footer">
+                            <div class="stat-item">
+                                <div>血量</div>
+                                <div class="stat-value">${unit.hp.toLocaleString()}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div>射程</div>
+                                <div class="stat-value">${unit.range}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('units-container').appendChild(container);
+
+                // Create Three.js scene for this card
+                initThreeScene(index, unit);
+
+                // Add click handler
+                container.addEventListener('click', () => showUnitInfo(unit));
+            });
+        }
+
+        // Initialize Three.js scene for a single unit
+        function initThreeScene(index, unit) {
+            const container = document.getElementById(`canvas-container-${index}`);
+            
+            // Create scene
+            const scene = new THREE.Scene();
+            
+            // Create camera
+            const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+            camera.position.z = 5;
+            camera.aspect = container.offsetWidth / container.offsetHeight;
+            camera.updateProjectionMatrix();
+            
+            // Create renderer with pixelated rendering
+            const renderer = new THREE.WebGLRenderer({ 
+                antialias: false,
+                alpha: true
+            });
+            renderer.setSize(container.offsetWidth, container.offsetHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Create sprite material with nearest-neighbor filtering
+            const textureLoader = new THREE.TextureLoader();
+            const imageUrl = unit.main_image;
+            
+            const texture = textureLoader.load(imageUrl, function(texture) {
+                texture.magFilter = THREE.NearestFilter;
+                texture.minFilter = THREE.NearestFilter;
+                const [w, h] = unit.main_size;
+                const fit = 3.2 / Math.max(w, h);
+                const mesh = new THREE.Mesh(
+                    new THREE.PlaneGeometry(w * fit, h * fit),
+                    new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide })
+                );
+                scene.add(mesh);
+                canvases[index] = { scene, camera, renderer, mesh };
+            });
+
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+
+                if (canvases[index] && canvases[index].mesh) {
+                    const time = Date.now() * 0.001;
+                    canvases[index].mesh.rotation.y = Math.sin(time * 0.8) * 0.45;
+                }
+
+                canvases[index]?.renderer?.render(canvases[index].scene, canvases[index].camera);
+            }
+            animate();
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (canvases[index]) {
+                    const newWidth = container.offsetWidth;
+                    const newHeight = container.offsetHeight;
+                    canvases[index].camera.aspect = newWidth / newHeight;
+                    canvases[index].camera.updateProjectionMatrix();
+                    canvases[index].renderer.setSize(newWidth, newHeight);
+                }
+            });
+        }
+
+        // Show unit information modal
+        function showUnitInfo(unit) {
+            const modal = document.getElementById('info-modal');
+            
+            document.getElementById('modal-faction').textContent = unit.faction;
+            document.getElementById('modal-name').textContent = unit.name;
+            document.getElementById('modal-tier').textContent = unit.tier;
+            document.getElementById('modal-price').textContent = `造价：${unit.price}`;
+            document.getElementById('modal-desc').textContent = unit.desc;
+
+            const statsContainer = document.getElementById('modal-stats');
+            statsContainer.innerHTML = '';
+
+            const stats = [
+                { label: '生命值', value: `${unit.hp.toLocaleString()}` },
+                { label: '射程', value: `${unit.range}` },
+                { label: '速度', value: `${unit.speed}` },
+                { label: '移动方式', value: `${unit.moveType}` }
+            ];
+
+            if (unit.shield) {
+                stats.push({ label: '护盾值', value: `${unit.shield}` });
+            }
+
+            stats.forEach(stat => {
+                const statRow = document.createElement('div');
+                statRow.className = 'stat-row';
+                statRow.innerHTML = `
+                    <div class="stat-label">${stat.label}</div>
+                    <div class="stat-data">${stat.value}</div>
+                `;
+                statsContainer.appendChild(statRow);
+            });
+
+            modal.classList.add('active');
+        }
+
+        // Close modal
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('info-modal').classList.remove('active');
+        });
+
+        document.getElementById('info-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'info-modal') {
+                document.getElementById('info-modal').classList.remove('active');
+            }
+        });
+
+        // BGM control
+        const bgmPlayer = document.getElementById('bgm-player');
+        const bgmToggle = document.getElementById('bgm-toggle');
+        let isPlaying = false;
+
+        bgmToggle.addEventListener('click', () => {
+            if (isPlaying) {
+                bgmPlayer.pause();
+                bgmToggle.textContent = '🔇';
+            } else {
+                bgmPlayer.play().catch(e => console.log('Auto-play prevented:', e));
+                bgmToggle.textContent = '🔊';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Initialize everything when page loads
+        window.addEventListener('load', initUnitCards);
+    </script>
+</body>
+</html>
